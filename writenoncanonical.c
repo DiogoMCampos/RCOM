@@ -5,6 +5,11 @@
 #include <fcntl.h>
 #include <termios.h>
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <termios.h>
+#include <strings.h>
+#include <unistd.h>
 
 #define BAUDRATE B38400
 #define MODEMDEVICE "/dev/ttyS1"
@@ -16,8 +21,8 @@ volatile int STOP=FALSE;
 
 int main(int argc, char** argv)
 {
-    int fd,c, res;
-    struct termios oldtio,newtio;
+    int fd, c, res;
+    struct termios oldtio, newtio;
     char buf[255];
     int i, sum = 0, speed = 0;
     
@@ -74,16 +79,13 @@ int main(int argc, char** argv)
 
 
 
-    for (i = 0; i < 255; i++) {
-      buf[i] = 'a';
-    }
+    gets(buf);
     
-    /*testing*/
-    buf[25] = '\n';
-    
-    res = write(fd,buf,255);   
-    printf("%d bytes written\n", res);
+    int length = strlen(buf);
  
+    res = write(fd, buf, length + 1);   
+    printf("%d bytes written\n", res);
+    printf("%s\n", buf);
 
   /* 
     O ciclo FOR e as instruções seguintes devem ser alterados de modo a respeitar 
