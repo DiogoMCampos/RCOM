@@ -5,6 +5,8 @@
 #include <fcntl.h>
 #include <termios.h>
 #include <stdio.h>
+#include <strings.h>
+#include <stdlib.h>
 
 #define BAUDRATE B38400
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
@@ -52,22 +54,30 @@ int main(int argc, char** argv)
 
     printf("New termios structure set\n");
 
+	int i = 0;
+char temp;
+
+printf("dasdad\n");
+
     do
     {
-	res = read(fd,buf,1);   // returns after 5 chars have been input 
-	buf[res]=0;               // so we can printf... 
-	printf(":%s:%d\n", buf, res);
-    }while(buf[res] != '\0');
+	res = read(fd,&temp,1);   // returns after 5 chars have been input 
+buf[i] = temp;
+i++;
 
-  /*
-   while (STOP==FALSE) {       // loop for input 
+	
+    }while(temp != '\0');
+
+	buf[i]=0;               // so we can printf... 
+	printf(":%s\n", buf);
+  
+  /* while (STOP==FALSE) {       // loop for input 
       res = read(fd,buf,255);   // returns after 5 chars have been input 
       buf[res]=0;               // so we can printf... 
       printf(":%s:%d\n", buf, res);
       if (buf[0]=='z') STOP=TRUE;
     }
 */
-
     tcsetattr(fd,TCSANOW,&oldtio);
     close(fd);
     return 0;
