@@ -13,6 +13,9 @@
 #define FALSE 0
 #define TRUE 1
 
+//macros nossos
+#define TRAMA_FLAG 0x7e
+
 volatile int STOP=FALSE;
 
 int main(int argc, char** argv)
@@ -21,8 +24,8 @@ int main(int argc, char** argv)
     struct termios oldtio,newtio;
     char buf[255];
 
-    if ( (argc < 2) || 
-  	     ((strcmp("/dev/ttyS0", argv[1])!=0) && 
+    if ( (argc < 2) ||
+  	     ((strcmp("/dev/ttyS0", argv[1])!=0) &&
   	      (strcmp("/dev/ttyS1", argv[1])!=0) )) {
       printf("Usage:\tnserial SerialPort\n\tex: nserial /dev/ttyS1\n");
       exit(1);
@@ -32,7 +35,7 @@ int main(int argc, char** argv)
     Open serial port device for reading and writing and not as controlling tty
     because we don't want to get killed if linenoise sends CTRL-C.
   */
-      
+
     fd = open(argv[1], O_RDWR | O_NOCTTY );
     if (fd <0) {perror(argv[1]); exit(-1); }
 
@@ -58,16 +61,27 @@ int main(int argc, char** argv)
     char temp;
 
     do {
-        res = read(fd,&temp,1);   // returns after 5 chars have been input 
+        res = read(fd,&temp,1);   // returns after 5 chars have been input
 	buf[i] = temp;
 	i++;
     } while (temp != '\0');
 
-    buf[i]=0;               // so we can printf... 
+    buf[i]=0;               // so we can printf...
     printf(":%s\n", buf);
-  
+
+
+    //work in progress---------------------------
+/*
+    int length = strlen(buf);
+
+    res = write(fd, buf, length + 1);
+    printf("%d bytes written\n", res);
+    printf("%s\n", buf);
+
+    sleep(2);*/
+    //-------------------------------------------
+
     tcsetattr(fd,TCSANOW,&oldtio);
     close(fd);
     return 0;
 }
-
