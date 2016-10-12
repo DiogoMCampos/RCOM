@@ -68,6 +68,7 @@ int main(int argc, char** argv)
 
     buf[i]=0;               // so we can printf...
     printf(":%s\n", buf);
+    printf("Message successfully received!");
 
 
     //work in progress---------------------------
