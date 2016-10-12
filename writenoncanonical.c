@@ -90,7 +90,7 @@ int main (int argc, char** argv)
     do {
         res = read(fd,&temp,1);   // returns after 5 chars have been input
 	      buf2[j] = temp;
-	      h++;
+	      j++;
     } while (temp != '\0');
 
     buf2[j]=0;               // so we can printf...
