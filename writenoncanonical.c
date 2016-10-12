@@ -79,11 +79,11 @@ int main (int argc, char** argv)
 
     res = write(fd, buf, length + 1);
     printf("%d bytes written\n", res);
-    printf("%s\n", buf);
+    printf("Message successfully written!\n");
 
     sleep(2);
     //work in progress---------------------------
-/*
+
     int j = 0;
     char temp;
 
@@ -95,7 +95,8 @@ int main (int argc, char** argv)
 
     buf2[j]=0;               // so we can printf...
     printf(":%s\n", buf2);
-*/
+    printf("Message successfully received!\n\n");
+
     //-------------------------------------------
 
 

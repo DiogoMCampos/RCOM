@@ -68,18 +68,18 @@ int main(int argc, char** argv)
 
     buf[i]=0;               // so we can printf...
     printf(":%s\n", buf);
-    printf("Message successfully received!");
+    printf("Message successfully received!\n\n");
 
 
     //work in progress---------------------------
-/*
+
     int length = strlen(buf);
 
     res = write(fd, buf, length + 1);
     printf("%d bytes written\n", res);
-    printf("%s\n", buf);
+    printf("Message successfully written!\n");
 
-    sleep(2);*/
+    sleep(2);
     //-------------------------------------------
 
     tcsetattr(fd,TCSANOW,&oldtio);
