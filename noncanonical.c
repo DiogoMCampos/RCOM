@@ -7,14 +7,12 @@
 #include <stdio.h>
 #include <strings.h>
 #include <stdlib.h>
+#include "auxiliar.h"
 
 #define BAUDRATE B38400
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
 #define FALSE 0
 #define TRUE 1
-
-//macros nossos
-#define TRAMA_FLAG 0x7e
 
 volatile int STOP=FALSE;
 
@@ -57,14 +55,37 @@ int main(int argc, char** argv)
 
     printf("New termios structure set\n");
 
+	// TODO - COLOCAR ESTA PARTE NUMA FUNCAO À PARTE
+
     int i = 0;
+	int counterTrama = 0; // Variable used to verify if the Trama was correctly read
     char temp;
 
     do {
         res = read(fd,&temp,1);   // returns after 5 chars have been input
 	buf[i] = temp;
+	printf("%d\n", counterTrama);
+	printf("%02X\n", buf[i]);
+	if (buf[i] == TRAMA_FLAG)
+		counterTrama++;
 	i++;
-    } while (temp != '\0');
+    } while (counterTrama < 2);
+
+
+	if (buf[0] == TRAMA_FLAG)
+		printf("1 trama flag correct!\n");
+if (buf[1] == A_SENDER)
+		printf("A_SENDER correct!\n");
+if (buf[2] == C_SET)
+		printf("C_SET correct!\n");
+if (buf[3] == A_SENDER^C_SET)
+		printf("BCC correct!\n");
+if (buf[4] == TRAMA_FLAG)
+		printf("2 trama flag correct!\n");
+
+
+
+	
 
     buf[i]=0;               // so we can printf...
     printf(":%s\n", buf);
