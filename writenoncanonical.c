@@ -10,6 +10,7 @@
 #include <termios.h>
 #include <strings.h>
 #include <unistd.h>
+#include "auxiliar.h"
 
 #define BAUDRATE B38400
 #define MODEMDEVICE "/dev/ttyS1"
@@ -17,16 +18,22 @@
 #define FALSE 0
 #define TRUE 1
 
-//macros nossos
-#define TRAMA_FLAG 0x7e
-
 volatile int STOP=FALSE;
+
+void createSET(char* SET)
+{
+    SET[0] = TRAMA_FLAG;
+    SET[1] = A_SENDER;
+    SET[2] = C_SET;
+    SET[3] = SET[1] ^ SET[2];
+    SET[4] = TRAMA_FLAG;
+}
 
 int main (int argc, char** argv)
 {
     int fd, c, res;
     struct termios oldtio, newtio;
-    char buf[255], buf2[255];
+    char buf2[255];
     int i, sum = 0, speed = 0;
 
     if ((argc < 2) ||
@@ -72,33 +79,28 @@ int main (int argc, char** argv)
     }
 
     printf("New termios structure set\n");
+    
+    char* SET = (char*) malloc(5 * sizeof(char));
+    createSET(SET);
 
-    gets(buf);
-
-    int length = strlen(buf);
-
-    res = write(fd, buf, length + 1);
-    printf("%d bytes written\n", res);
+    res = write(fd, SET, 5);
+    printf("%d bytes written\n", res);    
     printf("Message successfully written!\n");
 
-    sleep(2);
-    //work in progress---------------------------
+    sleep(1);
 
     int j = 0;
     char temp;
 
     do {
-        res = read(fd,&temp,1);   // returns after 5 chars have been input
-	      buf2[j] = temp;
-	      j++;
+        res = read(fd,&temp,1);
+	buf2[j] = temp;
+	j++;
     } while (temp != '\0');
 
-    buf2[j]=0;               // so we can printf...
+    buf2[j] = 0;
     printf(":%s\n", buf2);
     printf("Message successfully received!\n\n");
-
-    //-------------------------------------------
-
 
     if (tcsetattr(fd, TCSANOW, &oldtio) == -1) {
         perror("tcsetattr");
