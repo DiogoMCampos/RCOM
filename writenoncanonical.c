@@ -10,6 +10,7 @@
 #include <termios.h>
 #include <strings.h>
 #include <unistd.h>
+#include <signal.h>
 #include "auxiliar.h"
 
 #define BAUDRATE B38400
@@ -18,9 +19,24 @@
 #define FALSE 0
 #define TRUE 1
 
-volatile int STOP=FALSE;
+#define TRIES 3
+#define WAIT 3
 
+volatile int STOP = FALSE;
+
+int flag = 1;
 int count = 0;
+
+void atende() {
+    printf("Read count: %d\n", count);
+    flag = 1;
+    count++;
+}
+
+void setAlarm() {
+    (void) signal(SIGALRM, atende);
+    printf("Alarm set.\n");
+}
 
 void createSET(char* SET)
 {
@@ -34,12 +50,11 @@ void createSET(char* SET)
 int verifyUA(char* UA)
 {
     if (UA[0] != TRAMA_FLAG ||
-	UA[1] != A_SENDER ||
-	UA[2] != C_UA ||
-	UA[3] != (UA[1] ^ UA[2]) ||
-	UA[4] != TRAMA_FLAG) 
-    {
-	return -1;
+	    UA[1] != A_SENDER ||
+	    UA[2] != C_UA ||
+	    UA[3] != (UA[1] ^ UA[2]) ||
+	    UA[4] != TRAMA_FLAG) {
+	       return -1;
     }
 
     return 0;
@@ -57,7 +72,7 @@ int main (int argc, char** argv)
         exit(1);
     }
 
-    fd = open(argv[1], O_RDWR | O_NOCTTY);
+    fd = open(argv[1], O_RDWR | O_NOCTTY | O_NONBLOCK);
 
     if (fd < 0) {
         perror(argv[1]);
@@ -92,26 +107,35 @@ int main (int argc, char** argv)
       exit(-1);
     }
 
-    printf("New termios structure set\n");
-    
+    printf("New termios structure set.\n");
+
+    setAlarm();
+
     while (count < 3 && STOP == FALSE) {
         char* SET = (char*) malloc(5 * sizeof(char));
         createSET(SET);
 
         write(fd, SET, 5);
-
         sleep(1);
 
-        char* UA = (char*) malloc(5 * sizeof(char));
-        read(fd, UA, 5);
-        
-        if (verifyUA(UA) == 0) {
-	    STOP = TRUE;
+        if (flag) {
+            printf("Alarm activated.\n");
+            alarm(3);
+            flag = 0;
         }
-        
-        count++;
+
+        char* UA = (char*) malloc(5 * sizeof(char));
+
+        while (!flag) {
+            read(fd, UA, 5);
+        }
+
+        if (verifyUA(UA) == 0) {
+            printf("UA received correctly.\n");
+            STOP = TRUE;
+        }
     }
-    
+
     if (tcsetattr(fd, TCSANOW, &oldtio) == -1) {
         perror("tcsetattr");
         exit(-1);
