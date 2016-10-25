@@ -49,3 +49,36 @@ int llclose(int fd){
 
     return 0;
 }
+
+int state = 0;
+char charA;
+char charC;
+
+void state_machine(char trama_char){
+
+  if (strcmp(trama_char,TRAMA_FLAG)) {
+    if(state == 4)
+     state = 5;
+   else
+      state = 1;
+  }else if (strcmp(trama_char,A_SENDER)) {
+    if(state == 1){
+     state = 2;
+     charA = trama_char;
+   }else
+      state = 0;
+  }else if (strcmp(trama_char,C_RCV)) {
+    if(state == 2){
+     state = 3;
+     charC = trama_char;
+   }else
+      state = 0;
+  }else if (strcmp(trama_char,(charA ^ charC))) {
+    if(state == 3)
+     state = 4;
+   else
+      state = 0;
+  }else{
+    state = 0;
+  }
+}
