@@ -16,9 +16,44 @@
 
 volatile int STOP=FALSE;
 
+void createUA(char* UA)
+{
+    UA[0] = TRAMA_FLAG;
+    UA[1] = A_SENDER;
+    UA[2] = C_UA;
+    UA[3] = UA[1] ^ UA[2];
+    UA[4] = TRAMA_FLAG;
+}
+
+int verifySET(int fd, char * SET){
+
+    int i = 0;
+    int res;
+    char buf[255];
+	int counterTrama = 0; // Variable used to verify if the Trama was correctly read
+    char temp;
+    do {
+        res = read(fd,&temp,1);   // returns after 5 chars have been input
+	buf[i] = temp;
+
+	if (buf[i] == TRAMA_FLAG)
+		counterTrama++;
+	i++;
+    } while (counterTrama < 2);
+
+    if (SET[0] != TRAMA_FLAG ||
+    SET[1] != A_SENDER ||
+    SET[2] != C_SET ||
+    SET[3] != (SET[1] ^ SET[2]) ||
+    SET[4] != TRAMA_FLAG)
+    return -1;
+
+    return 0;
+}
+
 int main(int argc, char** argv)
 {
-    int fd,c, res;
+    int fd, res;
     struct termios oldtio,newtio;
     char buf[255];
 
@@ -55,50 +90,26 @@ int main(int argc, char** argv)
 
     printf("New termios structure set\n");
 
-	// TODO - COLOCAR ESTA PARTE NUMA FUNCAO À PARTE
+    // Corrigir
+    if (verifySET(fd, buf) == 0)
+        printf("SET trama successfully received!\n");
 
-    int i = 0;
-	int counterTrama = 0; // Variable used to verify if the Trama was correctly read
-    char temp;
+        // Creating Trama
+    char* UA = (char*) malloc(5 * sizeof(char));
+    createUA(UA);
 
-    do {
-        res = read(fd,&temp,1);   // returns after 5 chars have been input
-	buf[i] = temp;
-	printf("%d\n", counterTrama);
-	printf("%02X\n", buf[i]);
-	if (buf[i] == TRAMA_FLAG)
-		counterTrama++;
-	i++;
-    } while (counterTrama < 2);
-
-
-	if (buf[0] == TRAMA_FLAG)
-		printf("1 trama flag correct!\n");
-if (buf[1] == A_SENDER)
-		printf("A_SENDER correct!\n");
-if (buf[2] == C_SET)
-		printf("C_SET correct!\n");
-if (buf[3] == A_SENDER^C_SET)
-		printf("BCC correct!\n");
-if (buf[4] == TRAMA_FLAG)
-		printf("2 trama flag correct!\n");
-
-
-
-	
-
-    buf[i]=0;               // so we can printf...
-    printf(":%s\n", buf);
-    printf("Message successfully received!\n\n");
+    res = write(fd, UA, 5);
+    printf("%d bytes written\n", res);
+    printf("UA successfully written!\n");
 
 
     //work in progress---------------------------
 
-    int length = strlen(buf);
+    /*int length = strlen(buf);
 
     res = write(fd, buf, length + 1);
     printf("%d bytes written\n", res);
-    printf("Message successfully written!\n");
+    printf("Message successfully written!\n");*/
 
     sleep(2);
     //-------------------------------------------
