@@ -20,6 +20,8 @@
 
 volatile int STOP=FALSE;
 
+int count = 0;
+
 void createSET(char* SET)
 {
     SET[0] = TRAMA_FLAG;
@@ -29,12 +31,24 @@ void createSET(char* SET)
     SET[4] = TRAMA_FLAG;
 }
 
+int verifyUA(char* UA)
+{
+    if (UA[0] != TRAMA_FLAG ||
+	UA[1] != A_SENDER ||
+	UA[2] != C_UA ||
+	UA[3] != (UA[1] ^ UA[2]) ||
+	UA[4] != TRAMA_FLAG) 
+    {
+	return -1;
+    }
+
+    return 0;
+}
+
 int main (int argc, char** argv)
 {
-    int fd, c, res;
+    int fd;
     struct termios oldtio, newtio;
-    char buf2[255];
-    int i, sum = 0, speed = 0;
 
     if ((argc < 2) ||
   	     ((strcmp("/dev/ttyS0", argv[1])!=0) &&
@@ -80,28 +94,24 @@ int main (int argc, char** argv)
 
     printf("New termios structure set\n");
     
-    char* SET = (char*) malloc(5 * sizeof(char));
-    createSET(SET);
+    while (count < 3 && STOP == FALSE) {
+        char* SET = (char*) malloc(5 * sizeof(char));
+        createSET(SET);
 
-    res = write(fd, SET, 5);
-    printf("%d bytes written\n", res);    
-    printf("Message successfully written!\n");
+        write(fd, SET, 5);
 
-    sleep(1);
+        sleep(1);
 
-    int j = 0;
-    char temp;
-
-    do {
-        res = read(fd,&temp,1);
-	buf2[j] = temp;
-	j++;
-    } while (temp != '\0');
-
-    buf2[j] = 0;
-    printf(":%s\n", buf2);
-    printf("Message successfully received!\n\n");
-
+        char* UA = (char*) malloc(5 * sizeof(char));
+        read(fd, UA, 5);
+        
+        if (verifyUA(UA) == 0) {
+	    STOP = TRUE;
+        }
+        
+        count++;
+    }
+    
     if (tcsetattr(fd, TCSANOW, &oldtio) == -1) {
         perror("tcsetattr");
         exit(-1);
