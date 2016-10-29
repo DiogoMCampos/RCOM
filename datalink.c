@@ -20,6 +20,9 @@
 #define C_SET 0x03
 #define C_UA 0x07
 
+#define SENDER 0
+#define RECEIVER 1
+
 struct linkLayer {
   char port[20]; /*Device /dev/ttySx, x = 0, 1*/
   int baudRate; /* Transmission speed */
@@ -27,6 +30,62 @@ struct linkLayer {
   unsigned int timeout; /*Timer value: 1 s*/
   unsigned int numTransmissions; /*Number of trys if fails occurs*/
   char frame[MAX_SIZE]; /*Frame*/
+}
+
+int main(int argc, char* argv[]) {
+      int fd, type;
+
+      if (argc < 3) {
+        printf("Usage:\tnserial SENDER/RECEIVER SerialPort\n\tex: nserial SENDER /dev/ttyS1\n");
+        exit(1);
+      } else if ((strcmp("/dev/ttyS0", argv[2]) != 0) &&
+      (strcmp("/dev/ttyS1", argv[2]) != 0)) {
+          printf("Usage:\tnserial SENDER/RECEIVER SerialPort\n\tex: nserial SENDER /dev/ttyS1\n");
+          exit(2);
+      }
+
+      if (strcmp("SENDER", argv[1]) == 0) {
+          type = SENDER;
+      } else if (strcmp("RECEIVER", argv[1]) == 0) {
+          type = RECEIVER;
+      } else {
+          printf("Usage:\tnserial SENDER/RECEIVER SerialPort\n\tex: nserial SENDER /dev/ttyS1\n");
+          exit(3);
+      }
+
+      fd = open(argv[1], O_RDWR | O_NOCTTY | O_NONBLOCK);
+
+      if (fd < 0) {
+          perror(argv[1]);
+          exit(-1);
+      }
+
+      if (tcgetattr(fd, &oldtio) == -1) { /* save current port settings */
+          perror("tcgetattr");
+          exit(-1);
+      }
+
+      bzero(&newtio, sizeof(newtio));
+      newtio.c_cflag = BAUDRATE | CS8 | CLOCAL | CREAD;
+      newtio.c_iflag = IGNPAR;
+      newtio.c_oflag = 0;
+
+      /* set input mode (non-canonical, no echo,...) */
+      newtio.c_lflag = 0;
+
+      newtio.c_cc[VTIME] = 0;   /* inter-character timer unused */
+      newtio.c_cc[VMIN] = 1;   /* blocking read until 5 chars received */
+
+      tcflush(fd, TCIOFLUSH);
+
+      if (tcsetattr(fd, TCSANOW, &newtio) == -1) {
+          perror("tcsetattr");
+          exit(-1);
+      }
+
+      printf("New termios structure set.\n");
+
+      llopen(fd, type))
 }
 
 int llopen(int port, int flag){
