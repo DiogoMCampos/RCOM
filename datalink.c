@@ -67,19 +67,23 @@ int llopen(int fd, int flag){
 	return 0;
 }
 
-int llwrite(int fd, char * buffer, int length){
+int llwrite(int fd, char * buffer, int length, char ctrl_bit) {
+	char* TRAMA = malloc(sizeof(char) * 2 * length + 6);
+
+	createInfTrama(TRAMA, buffer, length, ctrl_bit);
 
 	/* if success
 	   return numero de caracteres escritos */
 
 	/* if error
 	   return -1 */
+	   
+	free(TRAMA);
 
 	return 0;
 }
 
-int llread(int fd, char * buffer){
-
+int llread(int fd, char * buffer, char ctrl_bit) {
 	/* if success
 	   return numero de caracteres lidos
 	   if fails

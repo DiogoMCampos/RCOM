@@ -27,8 +27,8 @@ struct linkLayer {
 
 
 int llopen(int fd, int flag);
-int llwrite(int fd, char * buffer, int length);
-int llread(int fd, char * buffer);
+int llwrite(int fd, char * buffer, int length, char ctrl_bit);
+int llread(int fd, char * buffer, char ctrl_bit);
 
 // TODO - USAR FLAG AQUI PARA SABER SE É O SENDER OU RECEIVER?
 int llclose(int fd, int flag);
