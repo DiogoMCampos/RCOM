@@ -9,7 +9,7 @@ char charC;
 
 int llopen(int fd, int flag){
 
-  if (flag == RECEIVER) {
+	if (flag == RECEIVER) {
 		int i = 0;
 		int res;
 		char buf[255];
@@ -28,7 +28,7 @@ int llopen(int fd, int flag){
 			printf("SET trama successfully received!\n");
 
 		// Creating Trama
-    char* UA = (char*) malloc(5 * sizeof(char));
+		char* UA = (char*) malloc(5 * sizeof(char));
 		createUA(UA);
 
 		res = write(fd, UA, 5);
@@ -40,7 +40,7 @@ int llopen(int fd, int flag){
 		setAlarm();
 
 		while (count < 3 && STOP == FALSE) {
-      char* SET = (char*) malloc(5 * sizeof(char));
+			char* SET = (char*) malloc(5 * sizeof(char));
 			createSET(SET);
 			write(fd, SET, 5);
 			sleep(1);
@@ -69,132 +69,132 @@ int llopen(int fd, int flag){
 
 int llwrite(int fd, char * buffer, int length){
 
-  /* if success
-  return numero de caracteres escritos */
+	/* if success
+	   return numero de caracteres escritos */
 
-  /* if error
-  return -1 */
+	/* if error
+	   return -1 */
 
-  return 0;
+	return 0;
 }
 
 int llread(int fd, char * buffer){
 
-  /* if success
-  return numero de caracteres lidos
-  if fails
-  return -1 */
+	/* if success
+	   return numero de caracteres lidos
+	   if fails
+	   return -1 */
 
-  return 0;
+	return 0;
 }
 
 int llclose(int fd, int flag){
-  printf("<<<---CLOSE--->>>\n");
-  if (flag == RECEIVER) {
-    int i = 0;
-    int res;
-    char buf[255];
-    int counterTrama = 0; // Variable used to verify if the Trama was correctly read
-    char temp;
+	printf("<<<---CLOSE--->>>\n");
+	if (flag == RECEIVER) {
+		int i = 0;
+		int res;
+		char buf[255];
+		int counterTrama = 0; // Variable used to verify if the Trama was correctly read
+		char temp;
 
-    // 1st ---------------------
-    do {
-      res = read(fd,&temp,1);   // returns after 5 chars have been input
-      buf[i] = temp;
+		// 1st ---------------------
+		do {
+			res = read(fd,&temp,1); // returns after 5 chars have been input
+			buf[i] = temp;
 
-      if (buf[i] == TRAMA_FLAG)
-        counterTrama++;
-      i++;
-    } while (counterTrama < 2);
+			if (buf[i] == TRAMA_FLAG)
+				counterTrama++;
+			i++;
+		} while (counterTrama < 2);
 
-    if (verifyDISC(buf) == 0)
-      printf("DISC trama successfully received!\n");
+		if (verifyDISC(buf) == 0)
+			printf("DISC trama successfully received!\n");
 
-    // 2nd ----------------------------
-    char* DISC = (char*) malloc(5 * sizeof(char));
-    createDISC(DISC);
+		// 2nd ----------------------------
+		char* DISC = (char*) malloc(5 * sizeof(char));
+		createDISC(DISC);
 
-    res = write(fd, DISC, 5);
-    printf("%d bytes written\n", res);
-    printf("DISC trama successfully written!\n");
+		res = write(fd, DISC, 5);
+		printf("%d bytes written\n", res);
+		printf("DISC trama successfully written!\n");
 
-    //3rd -------------------------------
-    counterTrama = 0;
-    i = 0;
-    do {
-      res = read(fd,&temp,1);   // returns after 5 chars have been input
-      buf[i] = temp;
+		//3rd -------------------------------
+		counterTrama = 0;
+		i = 0;
+		do {
+			res = read(fd,&temp,1); // returns after 5 chars have been input
+			buf[i] = temp;
 
-      if (buf[i] == TRAMA_FLAG)
-        counterTrama++;
-      i++;
-    } while (counterTrama < 2);
+			if (buf[i] == TRAMA_FLAG)
+				counterTrama++;
+			i++;
+		} while (counterTrama < 2);
 
-    if (verifyUA(buf) == 0)
-      printf("UA trama successfully received!\n");
+		if (verifyUA(buf) == 0)
+			printf("UA trama successfully received!\n");
 
-  }
-  else {
-    setAlarm();
+	}
+	else {
+		setAlarm();
 
-    count = 0;
-    STOP = FALSE;
+		count = 0;
+		STOP = FALSE;
 
-    while (count < 3 && STOP == FALSE) {
-      // 1st
-      char* DISC = (char*) malloc(5 * sizeof(char));
-      createDISC(DISC);
-      write(fd, DISC, 5);
-      sleep(1);
+		while (count < 3 && STOP == FALSE) {
+			// 1st
+			char* DISC = (char*) malloc(5 * sizeof(char));
+			createDISC(DISC);
+			write(fd, DISC, 5);
+			sleep(1);
 
-      if (alarmFlag) {
-        printf("Alarm activated.\n");
-        alarm(3);
-        alarmFlag = 0;
-      }
+			if (alarmFlag) {
+				printf("Alarm activated.\n");
+				alarm(3);
+				alarmFlag = 0;
+			}
 
-      //2nd
-      char* DISC2 = (char*) malloc(5 * sizeof(char));
+			//2nd
+			char* DISC2 = (char*) malloc(5 * sizeof(char));
 
-      while (!alarmFlag) {
-        read(fd, DISC2, 5);
-      }
+			while (!alarmFlag) {
+				read(fd, DISC2, 5);
+			}
 
-      if (verifyDISC(DISC2) == 0) {
-        printf("DISC received correctly.\n");
+			if (verifyDISC(DISC2) == 0) {
+				printf("DISC received correctly.\n");
 
-      }
+			}
 
-      //3rd
-      char* UA = (char*) malloc(5 * sizeof(char));
-      createUA(UA);
-      write(fd, UA, 5);
-      printf("UA sent from sender!\n");
-      STOP = TRUE;
-      sleep(1);
-    }
-  }
+			//3rd
+			char* UA = (char*) malloc(5 * sizeof(char));
+			createUA(UA);
+			write(fd, UA, 5);
+			printf("UA sent from sender!\n");
+			STOP = TRUE;
+			sleep(1);
+		}
+	}
 
-  sleep(2);
+	sleep(2);
 	if ( tcsetattr(fd,TCSANOW,&dataLink.oldtio) == -1) {
 		fprintf(stderr, "%s\n", "Error closing link.");
 		return 1;
 	}
 
 	close(fd);
-  printf("Program finished!\n");
-  return 0;
+	printf("Program finished!\n");
+	return 0;
 }
 
 int openSerial(char* port, int type){
 
-  int fd;
-  dataLink.port = port;
+	int fd;
+	dataLink.port = port;
 
-  if (type == SENDER)
-   fd = open(dataLink.port, OPEN_SENDER);
-  else
-   fd = open(dataLink.port, OPEN_RECEIVER);
+	if (type == SENDER)
+		fd = open(dataLink.port, OPEN_SENDER);
+	else
+		fd = open(dataLink.port, OPEN_RECEIVER);
 
 	if (fd < 0) {
 		perror(dataLink.port);
@@ -226,23 +226,23 @@ int openSerial(char* port, int type){
 
 	printf("New termios structure set.\n");
 
-  return fd;
+	return fd;
 }
 
 void createSET(char* SET){
-    SET[0] = TRAMA_FLAG;
-    SET[1] = A_SENDER;
-    SET[2] = C_SET;
-    SET[3] = SET[1] ^ SET[2];
-    SET[4] = TRAMA_FLAG;
+	SET[0] = TRAMA_FLAG;
+	SET[1] = A_SENDER;
+	SET[2] = C_SET;
+	SET[3] = SET[1] ^ SET[2];
+	SET[4] = TRAMA_FLAG;
 }
 
 void createUA(char* UA){
-    UA[0] = TRAMA_FLAG;
-    UA[1] = A_SENDER;
-    UA[2] = C_UA;
-    UA[3] = UA[1] ^ UA[2];
-    UA[4] = TRAMA_FLAG;
+	UA[0] = TRAMA_FLAG;
+	UA[1] = A_SENDER;
+	UA[2] = C_UA;
+	UA[3] = UA[1] ^ UA[2];
+	UA[4] = TRAMA_FLAG;
 }
 
 void createDISC(char* DISC){
@@ -254,125 +254,125 @@ void createDISC(char* DISC){
 }
 
 void createInfTrama(char* TRAMA, char* data, int length, int ctrl_bit){
-  TRAMA[0] = TRAMA_FLAG;
-  TRAMA[1] = A_SENDER;
-  TRAMA[2] = (ctrl_bit == 1) ? 0b01000000 : 0b00000000;
-  TRAMA[3] = TRAMA[1] ^ TRAMA[2];
+	TRAMA[0] = TRAMA_FLAG;
+	TRAMA[1] = A_SENDER;
+	TRAMA[2] = (ctrl_bit == 1) ? 0b01000000 : 0b00000000;
+	TRAMA[3] = TRAMA[1] ^ TRAMA[2];
 
-  unsigned int i = 0;
-  char data_ctrl = 0;
+	unsigned int i = 0;
+	char data_ctrl = 0;
 
-  for (i = 0; i < length; i++) {
-    TRAMA[4 + i] = data[i];
-    data_ctrl = data_ctrl ^ data[i];
-  }
+	for (i = 0; i < length; i++) {
+		TRAMA[4 + i] = data[i];
+		data_ctrl = data_ctrl ^ data[i];
+	}
 
-  TRAMA[4+length] = data_ctrl;
-  TRAMA[4+length+1] = TRAMA_FLAG;
+	TRAMA[4+length] = data_ctrl;
+	TRAMA[4+length+1] = TRAMA_FLAG;
 }
 
 int unmountTrama(char* TRAMA, char* data, int length, int ctrl_bit){
-  if (TRAMA[0] != TRAMA_FLAG ||
-      TRAMA[1] != A_SENDER ||
-      (TRAMA[2] != 0b01000000 && TRAMA[2] != 0b00000000)||
-      TRAMA[3] != (TRAMA[1] ^ TRAMA[2]) ||
-      TRAMA[length-1] != TRAMA_FLAG)
-      return -1;
+	if (TRAMA[0] != TRAMA_FLAG ||
+	    TRAMA[1] != A_SENDER ||
+	    (TRAMA[2] != 0b01000000 && TRAMA[2] != 0b00000000)||
+	    TRAMA[3] != (TRAMA[1] ^ TRAMA[2]) ||
+	    TRAMA[length-1] != TRAMA_FLAG)
+		return -1;
 
-  char data_ctrl = 0;
+	char data_ctrl = 0;
 
-  unsigned int i;
-  for (i = 0; i < length - 7; i++) {
-    data[i] = TRAMA[4+i];
-    data_ctrl = data_ctrl ^ TRAMA[4+i];
-  }
+	unsigned int i;
+	for (i = 0; i < length - 7; i++) {
+		data[i] = TRAMA[4+i];
+		data_ctrl = data_ctrl ^ TRAMA[4+i];
+	}
 
-  if (data_ctrl != TRAMA[length-2]) {
-    return -1;
-  }
+	if (data_ctrl != TRAMA[length-2]) {
+		return -1;
+	}
 
-  return 0;
+	return 0;
 }
 
 void createRR(char* RR, int packet){
 
-   	RR[0] = TRAMA_FLAG;
-   	RR[1] = A_SENDER;
+	RR[0] = TRAMA_FLAG;
+	RR[1] = A_SENDER;
 
-   	if(packet == 0)
-   	 RR[2] = C_RR_0;
+	if(packet == 0)
+		RR[2] = C_RR_0;
 
-   	else if(packet == 1)
-   	 RR[2] = C_RR_1;
+	else if(packet == 1)
+		RR[2] = C_RR_1;
 
-   	RR[3] = RR[1] ^ RR[2];
-   	RR[4] = TRAMA_FLAG;
- }
+	RR[3] = RR[1] ^ RR[2];
+	RR[4] = TRAMA_FLAG;
+}
 
- void createREJ(char* REJ, int packet){
+void createREJ(char* REJ, int packet){
 
- 	REJ[0] = TRAMA_FLAG;
- 	REJ[1] = A_SENDER;
+	REJ[0] = TRAMA_FLAG;
+	REJ[1] = A_SENDER;
 
- 	if(packet == 0)
- 	 REJ[2] = C_REJ_0;
+	if(packet == 0)
+		REJ[2] = C_REJ_0;
 
- 	else if(packet == 1)
- 	 REJ[2] = C_REJ_1;
+	else if(packet == 1)
+		REJ[2] = C_REJ_1;
 
- 	REJ[3] = REJ[1] ^ REJ[2];
- 	REJ[4] = TRAMA_FLAG;
- }
+	REJ[3] = REJ[1] ^ REJ[2];
+	REJ[4] = TRAMA_FLAG;
+}
 
 int verifySET(char * SET){
-    if (SET[0] != TRAMA_FLAG ||
-    SET[1] != A_SENDER ||
-    SET[2] != C_SET ||
-    SET[3] != (SET[1] ^ SET[2]) ||
-    SET[4] != TRAMA_FLAG)
-    return -1;
+	if (SET[0] != TRAMA_FLAG ||
+	    SET[1] != A_SENDER ||
+	    SET[2] != C_SET ||
+	    SET[3] != (SET[1] ^ SET[2]) ||
+	    SET[4] != TRAMA_FLAG)
+		return -1;
 
-    return 0;
+	return 0;
 }
 
 int verifyUA(char* UA){
-    if (UA[0] != TRAMA_FLAG ||
+	if (UA[0] != TRAMA_FLAG ||
 	    UA[1] != A_SENDER ||
 	    UA[2] != C_UA ||
 	    UA[3] != (UA[1] ^ UA[2]) ||
 	    UA[4] != TRAMA_FLAG) {
-	       return -1;
-    }
+		return -1;
+	}
 
-    return 0;
+	return 0;
 }
 
 int verifyDISC(char * DISC){
 
-    if (DISC[0] != TRAMA_FLAG ||
-    DISC[1] != A_SENDER ||
-    DISC[2] != C_DISC ||
-    DISC[3] != (DISC[1] ^ DISC[2]) ||
-    DISC[4] != TRAMA_FLAG)
-    return -1;
+	if (DISC[0] != TRAMA_FLAG ||
+	    DISC[1] != A_SENDER ||
+	    DISC[2] != C_DISC ||
+	    DISC[3] != (DISC[1] ^ DISC[2]) ||
+	    DISC[4] != TRAMA_FLAG)
+		return -1;
 
-    return 0;
+	return 0;
 }
 
 void handleAlarm() {
-    printf("Read count: %d\n", count);
-    alarmFlag= 1;
-    count++;
+	printf("Read count: %d\n", count);
+	alarmFlag= 1;
+	count++;
 }
 
 void setAlarm() {
-    (void) signal(SIGALRM, handleAlarm);
-    printf("Alarm set.\n");
+	(void) signal(SIGALRM, handleAlarm);
+	printf("Alarm set.\n");
 }
 
 int byteStuffing(char* packet, char* dest, int size) {
 	unsigned int stuffedSize = 0;
-  unsigned int i;
+	unsigned int i;
 	for (i = 0; i < size; ++i) {
 		if (packet[i] == TRAMA_FLAG) {
 			dest[stuffedSize++] = ESCAPE;
@@ -390,33 +390,33 @@ int byteStuffing(char* packet, char* dest, int size) {
 
 int byteDestuffing(char* packet, char* dest, int size) {
 	unsigned int destuffedSize = 0;
-  unsigned int i;
+	unsigned int i;
 	for (i = 0; i < size; ++i) {
 		if (i != (size - 1) && packet[i] == 0x7D) {
-            ++i;
+			++i;
 			if (packet[i] == 0x5E) {
 				dest[destuffedSize++] = 0x7E;
 			} else if (packet[i] == 0x5D) {
 				dest[destuffedSize++] = 0x7D;
 			}
 		} else {
-            dest[destuffedSize++] = packet[i];
-        }
-        printf("%u: %02x\n", destuffedSize, dest[destuffedSize]);
+			dest[destuffedSize++] = packet[i];
+		}
+		printf("%u: %02x\n", destuffedSize, dest[destuffedSize]);
 	}
 	return destuffedSize;
 }
 
 char createBCC(char* buffer, int size){
 
-  int i;
-  int bcc = 0;
+	int i;
+	int bcc = 0;
 
-  for (i = 0; i < size; i++){
-    bcc = bcc^buffer[i];
-  }
+	for (i = 0; i < size; i++) {
+		bcc = bcc^buffer[i];
+	}
 
-  return bcc;
+	return bcc;
 }
 
 void state_machine(int state, char trama_char, int is_set) {

@@ -18,11 +18,11 @@
 #define OPEN_RECEIVER O_RDWR | O_NOCTTY
 
 struct linkLayer {
-  char* port; /*Device /dev/ttySx, x = 0, 1*/
-  unsigned int numTransmissions; /*Number of trys if fails occurs*/
-  char frame[MAX_SIZE]; /*Frame*/
-  struct termios oldtio;
-  struct termios newtio;
+	char* port; /*Device /dev/ttySx, x = 0, 1*/
+	unsigned int numTransmissions; /*Number of trys if fails occurs*/
+	char frame[MAX_SIZE]; /*Frame*/
+	struct termios oldtio;
+	struct termios newtio;
 };
 
 
