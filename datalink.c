@@ -90,9 +90,84 @@ int llread(int fd, char * buffer){
 
 int llclose(int fd, int flag){
 
-  // TODO -  FALTA TERMINAR
-  // COLOCAR CLOSE PARA O SENDER E O RECEIVER
+  if (flag == RECEIVER) {
+    int i = 0;
+    int res;
+    char buf[255];
+    int counterTrama = 0; // Variable used to verify if the Trama was correctly read
+    char temp;
 
+    // 1st ---------------------
+    do {
+      res = read(fd,&temp,1);   // returns after 5 chars have been input
+      buf[i] = temp;
+
+      if (buf[i] == TRAMA_FLAG)
+        counterTrama++;
+      i++;
+    } while (counterTrama < 2);
+
+    if (verifyDISC(buf) == 0)
+      printf("DISC trama successfully received!\n");
+
+    // 2nd ----------------------------
+    char* DISC = (char*) malloc(5 * sizeof(char));
+    createDISC(DISC);
+
+    res = write(fd, DISC, 5);
+    printf("%d bytes written\n", res);
+    printf("DISC trama successfully written!\n");
+
+    //3rd -------------------------------
+    do {
+      res = read(fd,&temp,1);   // returns after 5 chars have been input
+      buf[i] = temp;
+
+      if (buf[i] == TRAMA_FLAG)
+        counterTrama++;
+      i++;
+    } while (counterTrama < 2);
+
+    if (verifyUA(buf) == 0)
+      printf("UA trama successfully received!\n");
+
+  }
+  else {
+    setAlarm();
+
+    while (count < 3 && STOP == FALSE) {
+      // 1st
+      char* DISC = (char*) malloc(5 * sizeof(char));
+      createDISC(DISC);
+      write(fd, DISC, 5);
+      sleep(1);
+/*
+      if (alarmFlag) {
+        printf("Alarm activated.\n");
+        alarm(3);
+        alarmFlag = 0;
+      }
+*/
+      //2nd
+      char* DISC2 = (char*) malloc(5 * sizeof(char));
+
+      while (!alarmFlag) {
+        read(fd, DISC2, 5);
+      }
+
+      if (verifyDISC(DISC2) == 0) {
+        printf("DISC received correctly.\n");
+        STOP = TRUE;
+      }
+
+      //3rd
+      char* UA = (char*) malloc(5 * sizeof(char));
+      createUA(UA);
+      write(fd, UA, 5);
+      sleep(1);
+
+    }
+  }
 
   sleep(2);
 	if ( tcsetattr(fd,TCSANOW,&dataLink.oldtio) == -1) {
