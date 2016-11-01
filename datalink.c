@@ -253,22 +253,25 @@ void createDISC(char* DISC){
 	DISC[4] = TRAMA_FLAG;
 }
 
-void createInfTrama(char* TRAMA, char* data, int data_length, int ctrl_bit){
+void createInfTrama(char* TRAMA, char* data, int length, int ctrl_bit) {
 	TRAMA[0] = TRAMA_FLAG;
 	TRAMA[1] = A_SENDER;
 	TRAMA[2] = (ctrl_bit == 1) ? 0b01000000 : 0b00000000;
 	TRAMA[3] = TRAMA[1] ^ TRAMA[2];
 
-	unsigned int i = 0;
-	char data_ctrl = 0;
+	char bcc2 = createBCC(data, length);
 
-	for (i = 0; i < data_length; i++) {
-		TRAMA[4 + i] = data[i];
-		data_ctrl = data_ctrl ^ data[i];
+	char* stuffedData = malloc(sizeof(char) * length * 2);
+	unsigned int stuffedLength = byteStuffing(data, stuffedData, length);
+
+	unsigned int i = 0;
+
+	for (i = 0; i < stuffedLength; i++) {
+		TRAMA[4 + i] = stuffedData[i];
 	}
 
-	TRAMA[4+data_length] = data_ctrl;
-	TRAMA[4+data_length+1] = TRAMA_FLAG;
+	TRAMA[4 + length] = bcc2;
+	TRAMA[4 + length + 1] = TRAMA_FLAG;
 }
 
 int unmountTrama(char* TRAMA, char* data, int trama_length, int ctrl_bit){
@@ -304,7 +307,7 @@ int unmountTrama(char* TRAMA, char* data, int trama_length, int ctrl_bit){
 	return 0;
 }
 
-void createRR(char* RR, int packet){
+void createRR(char* RR, int packet) {
 
 	RR[0] = TRAMA_FLAG;
 	RR[1] = A_SENDER;
@@ -319,8 +322,7 @@ void createRR(char* RR, int packet){
 	RR[4] = TRAMA_FLAG;
 }
 
-void createREJ(char* REJ, int packet){
-
+void createREJ(char* REJ, int packet) {
 	REJ[0] = TRAMA_FLAG;
 	REJ[1] = A_SENDER;
 
@@ -334,7 +336,7 @@ void createREJ(char* REJ, int packet){
 	REJ[4] = TRAMA_FLAG;
 }
 
-int verifySET(char * SET){
+int verifySET(char * SET) {
 	if (SET[0] != TRAMA_FLAG ||
 	    SET[1] != A_SENDER ||
 	    SET[2] != C_SET ||
@@ -345,7 +347,7 @@ int verifySET(char * SET){
 	return 0;
 }
 
-int verifyUA(char* UA){
+int verifyUA(char* UA) {
 	if (UA[0] != TRAMA_FLAG ||
 	    UA[1] != A_SENDER ||
 	    UA[2] != C_UA ||
@@ -357,8 +359,7 @@ int verifyUA(char* UA){
 	return 0;
 }
 
-int verifyDISC(char * DISC){
-
+int verifyDISC(char * DISC) {
 	if (DISC[0] != TRAMA_FLAG ||
 	    DISC[1] != A_SENDER ||
 	    DISC[2] != C_DISC ||
@@ -417,16 +418,16 @@ int byteDestuffing(char* packet, char* dest, int size) {
 	return destuffedSize;
 }
 
-char createBCC(char* buffer, int size){
+char createBCC2(char* buffer, int size) {
 
 	int i;
-	int bcc = 0;
+	int bcc2 = 0;
 
 	for (i = 0; i < size; i++) {
-		bcc = bcc^buffer[i];
+		bcc2 = bcc2 ^ buffer[i];
 	}
 
-	return bcc;
+	return bcc2;
 }
 
 void state_machine(int state, char trama_char, int is_set) {
