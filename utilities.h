@@ -18,5 +18,12 @@
 #define C_DISC 0x0B
 #define ESCAPE 0X7D
 
+#define START_STATE 0
+#define FLAG_STATE 1
+#define A_STATE 2
+#define C_STATE 3
+#define BCC_STATE 4
+#define STOP_STATE 5
+
 
 #endif // UTILITIES_H

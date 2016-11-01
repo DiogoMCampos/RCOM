@@ -41,6 +41,7 @@ int verifyUA(char* UA);
 int verifyDISC(int fd, char * SET);
 void handleAlarm();
 void setAlarm();
+void state_machine(int state, char trama_char, int is_set);
 
 
 #endif // DATALINK_H

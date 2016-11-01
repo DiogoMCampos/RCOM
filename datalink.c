@@ -3,6 +3,9 @@
 struct linkLayer dataLink;
 int alarmFlag = 1, count = 0;
 volatile int STOP=FALSE;
+int machine_state = 0;
+char charA;
+char charC;
 
 int llopen(char* port, int flag){
   int fd = openSerial(port, flag);
@@ -233,4 +236,53 @@ void handleAlarm() {
 void setAlarm() {
     (void) signal(SIGALRM, handleAlarm);
     printf("Alarm set.\n");
+}
+
+void state_machine(int state, char trama_char, int is_set) {
+
+	switch (state) {
+	case START_STATE:
+		if (trama_char == TRAMA_FLAG)
+			state = FLAG_STATE;
+		break;
+
+	case FLAG_STATE:
+		if (trama_char == TRAMA_FLAG)
+			state = FLAG_STATE;
+		else if (trama_char == A_SENDER)
+			state = A_STATE;
+		else
+			state = START_STATE;
+		break;
+
+	case A_STATE:
+		if (trama_char == TRAMA_FLAG)
+			state = FLAG_STATE;
+		else if ((trama_char == C_SET && is_set) ||
+		         (trama_char == C_UA && !is_set)) {
+			state = C_STATE;
+			charC = trama_char;
+		} else
+			state = START_STATE;
+		break;
+
+	case C_STATE:
+		if (trama_char == TRAMA_FLAG)
+			state = FLAG_STATE;
+		else if (trama_char == (charA ^ charC))
+			state = BCC_STATE;
+		else
+			state = START_STATE;
+		break;
+
+	case BCC_STATE:
+		if (trama_char == TRAMA_FLAG)
+			state = STOP_STATE;
+		else
+			state = START_STATE;
+		break;
+
+	default:
+		break;
+	}
 }
