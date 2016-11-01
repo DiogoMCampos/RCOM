@@ -175,6 +175,37 @@ void createDISC(char* DISC)
 	DISC[4] = TRAMA_FLAG;
 }
 
+void createRR(char* RR, int packet){
+
+  	RR[0] = TRAMA_FLAG;
+  	RR[1] = A_SENDER;
+
+  	if(packet == 0)
+  	 RR[2] = C_RR_0;
+
+  	else if(packet == 1)
+  	 RR[2] = C_RR_1;
+
+  	RR[3] = RR[1] ^ RR[2];
+  	RR[4] = TRAMA_FLAG;
+
+}
+
+void createREJ(char* REJ, int packet){
+
+	REJ[0] = TRAMA_FLAG;
+	REJ[1] = A_SENDER;
+
+	if(packet == 0)
+	 REJ[2] = C_REJ_0;
+
+	else if(packet == 1)
+	 REJ[2] = C_REJ_1;
+
+	REJ[3] = REJ[1] ^ REJ[2];
+	REJ[4] = TRAMA_FLAG;
+}
+
 int verifySET(int fd, char * SET){
     if (SET[0] != TRAMA_FLAG ||
     SET[1] != A_SENDER ||

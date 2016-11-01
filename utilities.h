@@ -16,6 +16,10 @@
 #define C_SET 0x03
 #define C_UA 0x07
 #define C_DISC 0x0B
+#define C_RR_0 0x05
+#define C_RR_1 0x85
+#define C_REJ_0 0x01
+#define C_REJ_1 0x81
 #define ESCAPE 0X7D
 
 #define START_STATE 0
