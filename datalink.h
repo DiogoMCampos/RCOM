@@ -36,7 +36,7 @@ int openSerial(char* port, int type);
 void createSET(char* SET);
 void createUA(char* UA);
 void createDISC(char* DISC);
-void createInfTrama(char* TRAMA, char* data, int data_length, int ctrl_bit);
+unsigned int createInfTrama(char* TRAMA, char* data, int data_length, int ctrl_bit);
 int unmountTrama(char* TRAMA, char* data, int trama_length, int ctrl_bit);
 void createRR(char* RR, int packet);
 void createREJ(char* REJ, int packet);

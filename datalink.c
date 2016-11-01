@@ -70,14 +70,14 @@ int llopen(int fd, int flag){
 int llwrite(int fd, char * buffer, int length, char ctrl_bit) {
 	char* TRAMA = malloc(sizeof(char) * 2 * length + 6);
 
-	createInfTrama(TRAMA, buffer, length, ctrl_bit);
+	unsigned int tramaLength = createInfTrama(TRAMA, buffer, length, ctrl_bit);
 
 	/* if success
 	   return numero de caracteres escritos */
 
 	/* if error
 	   return -1 */
-	   
+
 	free(TRAMA);
 
 	return 0;
@@ -257,7 +257,7 @@ void createDISC(char* DISC){
 	DISC[4] = TRAMA_FLAG;
 }
 
-void createInfTrama(char* TRAMA, char* data, int length, int ctrl_bit) {
+unsigned int createInfTrama(char* TRAMA, char* data, int length, int ctrl_bit) {
 	TRAMA[0] = TRAMA_FLAG;
 	TRAMA[1] = A_SENDER;
 	TRAMA[2] = (ctrl_bit == 1) ? 0b01000000 : 0b00000000;
@@ -274,8 +274,10 @@ void createInfTrama(char* TRAMA, char* data, int length, int ctrl_bit) {
 		TRAMA[4 + i] = stuffedData[i];
 	}
 
-	TRAMA[4 + length] = bcc2;
-	TRAMA[4 + length + 1] = TRAMA_FLAG;
+	TRAMA[4 + stuffedLength] = bcc2;
+	TRAMA[4 + stuffedLength + 1] = TRAMA_FLAG;
+
+	return stuffedLength + 6;
 }
 
 int unmountTrama(char* TRAMA, char* data, int trama_length, int ctrl_bit){
