@@ -253,6 +253,28 @@ void createDISC(char* DISC){
 	DISC[4] = TRAMA_FLAG;
 }
 
+void createInfTrama(char* TRAMA, char* data, int length, int ctrl_bit){
+  TRAMA[0] = TRAMA_FLAG;
+  TRAMA[1] = A_SENDER;
+  TRAMA[2] = (ctrl_bit == 1) ? 0b01000000 : 0b00000000;
+  TRAMA[3] = TRAMA[1] ^ TRAMA[2];
+
+  unsigned int i = 0;
+  char data_ctrl = 0;
+
+  for (i = 0; i < length; i++) {
+    TRAMA[4 + i] = data[i];
+    data_ctrl = data_ctrl ^ data[i];
+  }
+
+  TRAMA[4+length] = data_ctrl;
+  TRAMA[4+length+1] = TRAMA_FLAG;
+}
+
+int unmountTrama(char* TRAMA, char* data){
+  return 1;
+}
+
 void createRR(char* RR, int packet){
 
    	RR[0] = TRAMA_FLAG;
