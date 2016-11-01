@@ -30,14 +30,14 @@ int llopen(int fd, int flag);
 int llwrite(int fd, char * buffer, int length, char ctrl_bit);
 int llread(int fd, char * buffer, char ctrl_bit);
 
-// TODO - USAR FLAG AQUI PARA SABER SE É O SENDER OU RECEIVER?
+// TODO - USAR FLAG AQUI PARA SABER SE Ã‰ O SENDER OU RECEIVER?
 int llclose(int fd, int flag);
 int openSerial(char* port, int type);
 void createSET(char* SET);
 void createUA(char* UA);
 void createDISC(char* DISC);
 unsigned int createInfTrama(char* TRAMA, char* data, int data_length, int ctrl_bit);
-int unmountTrama(char* TRAMA, char* data, int trama_length, int ctrl_bit);
+int unmountTrama(char* TRAMA, char* destuffedData, int trama_length, int ctrl_bit);
 void createRR(char* RR, int packet);
 void createREJ(char* REJ, int packet);
 int verifySET(char * SET);
@@ -51,6 +51,6 @@ int byteStuffing(char* packet, char* dest, int size);
 int byteDestuffing(char* packet, char* dest, int size);
 char createBCC2(char* buffer, int size);
 void state_machine(int state, char trama_char, int is_set);
-
+int superviseStateMachine(int fd, unsigned char* C);
 
 #endif // DATALINK_H
