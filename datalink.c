@@ -24,7 +24,7 @@ int llopen(int fd, int flag){
 			i++;
 		} while (counterTrama < 2);
 
-		if (verifySET(fd, buf) == 0)
+		if (verifySET(buf) == 0)
 			printf("SET trama successfully received!\n");
 
 		// Creating Trama
@@ -204,7 +204,7 @@ void createRR(char* RR, int packet){
  	REJ[4] = TRAMA_FLAG;
  }
 
-int verifySET(int fd, char * SET){
+int verifySET(char * SET){
     if (SET[0] != TRAMA_FLAG ||
     SET[1] != A_SENDER ||
     SET[2] != C_SET ||
@@ -228,23 +228,7 @@ int verifyUA(char* UA)
     return 0;
 }
 
-int verifyDISC(int fd, char * SET){
-
-    int i = 0;
-    int res;
-    char buf[255];
-	int counterTrama = 0; // Variable used to verify if the Trama was correctly read
-    char temp;
-    do {
-        res = read(fd,&temp,1);   // returns after 5 chars have been input
-        if (res == -1)
-          perror("Failing reading DISC.");
-	buf[i] = temp;
-
-	if (buf[i] == TRAMA_FLAG)
-		counterTrama++;
-	i++;
-    } while (counterTrama < 2);
+int verifyDISC(char * SET){
 
     if (SET[0] != TRAMA_FLAG ||
     SET[1] != A_SENDER ||

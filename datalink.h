@@ -38,9 +38,9 @@ void createUA(char* UA);
 void createDISC(char* DISC);
 void createRR(char* RR, int packet);
 void createREJ(char* REJ, int packet);
-int verifySET(int fd, char * SET);
+int verifySET(char * SET);
 int verifyUA(char* UA);
-int verifyDISC(int fd, char * SET);
+int verifyDISC(char * SET);
 void handleAlarm();
 void setAlarm();
 // TODO - FALTA IMPLEMENTAR
