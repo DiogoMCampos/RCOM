@@ -253,7 +253,7 @@ void createDISC(char* DISC){
 	DISC[4] = TRAMA_FLAG;
 }
 
-void createInfTrama(char* TRAMA, char* data, int length, int ctrl_bit){
+void createInfTrama(char* TRAMA, char* data, int data_length, int ctrl_bit){
 	TRAMA[0] = TRAMA_FLAG;
 	TRAMA[1] = A_SENDER;
 	TRAMA[2] = (ctrl_bit == 1) ? 0b01000000 : 0b00000000;
@@ -262,32 +262,42 @@ void createInfTrama(char* TRAMA, char* data, int length, int ctrl_bit){
 	unsigned int i = 0;
 	char data_ctrl = 0;
 
-	for (i = 0; i < length; i++) {
+	for (i = 0; i < data_length; i++) {
 		TRAMA[4 + i] = data[i];
 		data_ctrl = data_ctrl ^ data[i];
 	}
 
-	TRAMA[4+length] = data_ctrl;
-	TRAMA[4+length+1] = TRAMA_FLAG;
+	TRAMA[4+data_length] = data_ctrl;
+	TRAMA[4+data_length+1] = TRAMA_FLAG;
 }
 
-int unmountTrama(char* TRAMA, char* data, int length, int ctrl_bit){
-	if (TRAMA[0] != TRAMA_FLAG ||
-	    TRAMA[1] != A_SENDER ||
-	    (TRAMA[2] != 0b01000000 && TRAMA[2] != 0b00000000)||
-	    TRAMA[3] != (TRAMA[1] ^ TRAMA[2]) ||
-	    TRAMA[length-1] != TRAMA_FLAG)
-		return -1;
+int unmountTrama(char* TRAMA, char* data, int trama_length, int ctrl_bit){
+	if (ctrl_bit == 1) {
+		if (TRAMA[0] != TRAMA_FLAG ||
+		    TRAMA[1] != A_SENDER ||
+		    TRAMA[2] != 0b01000000||
+		    TRAMA[3] != (TRAMA[1] ^ TRAMA[2]) ||
+		    TRAMA[data_length-1] != TRAMA_FLAG)
+			return -1;
+	} else {
+		if (TRAMA[0] != TRAMA_FLAG ||
+		    TRAMA[1] != A_SENDER ||
+		    TRAMA[2] != 0b00000000||
+		    TRAMA[3] != (TRAMA[1] ^ TRAMA[2]) ||
+		    TRAMA[data_length-1] != TRAMA_FLAG)
+			return -1;
+	}
+
 
 	char data_ctrl = 0;
 
 	unsigned int i;
-	for (i = 0; i < length - 7; i++) {
+	for (i = 0; i < data_length - 7; i++) {
 		data[i] = TRAMA[4+i];
 		data_ctrl = data_ctrl ^ TRAMA[4+i];
 	}
 
-	if (data_ctrl != TRAMA[length-2]) {
+	if (data_ctrl != TRAMA[data_length-2]) {
 		return -1;
 	}
 
