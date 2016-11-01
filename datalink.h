@@ -43,6 +43,10 @@ int verifyUA(char* UA);
 int verifyDISC(int fd, char * SET);
 void handleAlarm();
 void setAlarm();
+// TODO - FALTA IMPLEMENTAR
+int byteStuffing(char* packet, int size);
+// TODO - FALTA IMPLEMENTAR
+int byteDestuffing(char* packet, int size);
 void state_machine(int state, char trama_char, int is_set);
 
 
