@@ -136,6 +136,7 @@ int llclose(int fd, int flag){
     setAlarm();
 
     count = 0;
+    STOP = FALSE;
 
     while (count < 3 && STOP == FALSE) {
       // 1st
@@ -326,8 +327,8 @@ void setAlarm() {
 
 int byteStuffing(char* packet, char* dest, int size) {
 	unsigned int stuffedSize = 0;
-
-	for (unsigned int i = 0; i < size; ++i) {
+  unsigned int i;
+	for (i = 0; i < size; ++i) {
 		if (packet[i] == TRAMA_FLAG) {
 			dest[stuffedSize++] = ESCAPE;
 			dest[stuffedSize++] = TRAMA_FLAG ^ REPLACEMENT;
@@ -344,8 +345,8 @@ int byteStuffing(char* packet, char* dest, int size) {
 
 int byteDestuffing(char* packet, char* dest, int size) {
 	unsigned int destuffedSize = 0;
-
-	for (unsigned int i = 0; i < size; ++i) {
+  unsigned int i;
+	for (i = 0; i < size; ++i) {
 		if (i != (size - 1) && packet[i] == 0x7D) {
             ++i;
 			if (packet[i] == 0x5E) {
