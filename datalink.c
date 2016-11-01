@@ -277,14 +277,14 @@ int unmountTrama(char* TRAMA, char* data, int trama_length, int ctrl_bit){
 		    TRAMA[1] != A_SENDER ||
 		    TRAMA[2] != 0b01000000||
 		    TRAMA[3] != (TRAMA[1] ^ TRAMA[2]) ||
-		    TRAMA[data_length-1] != TRAMA_FLAG)
+		    TRAMA[trama_length-1] != TRAMA_FLAG)
 			return -1;
 	} else {
 		if (TRAMA[0] != TRAMA_FLAG ||
 		    TRAMA[1] != A_SENDER ||
 		    TRAMA[2] != 0b00000000||
 		    TRAMA[3] != (TRAMA[1] ^ TRAMA[2]) ||
-		    TRAMA[data_length-1] != TRAMA_FLAG)
+		    TRAMA[trama_length-1] != TRAMA_FLAG)
 			return -1;
 	}
 
@@ -292,12 +292,12 @@ int unmountTrama(char* TRAMA, char* data, int trama_length, int ctrl_bit){
 	char data_ctrl = 0;
 
 	unsigned int i;
-	for (i = 0; i < data_length - 7; i++) {
+	for (i = 0; i < trama_length - 7; i++) {
 		data[i] = TRAMA[4+i];
 		data_ctrl = data_ctrl ^ TRAMA[4+i];
 	}
 
-	if (data_ctrl != TRAMA[data_length-2]) {
+	if (data_ctrl != TRAMA[trama_length-2]) {
 		return -1;
 	}
 
