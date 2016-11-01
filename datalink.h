@@ -26,12 +26,12 @@ struct linkLayer {
 };
 
 
-int llopen(char* port, int flag);
+int llopen(int fd, int flag);
 int llwrite(int fd, char * buffer, int length);
 int llread(int fd, char * buffer);
 
 // TODO - USAR FLAG AQUI PARA SABER SE É O SENDER OU RECEIVER?
-int llclose(int fd);
+int llclose(int fd, int flag);
 int openSerial(char* port, int type);
 void createSET(char* SET);
 void createUA(char* UA);

@@ -22,11 +22,9 @@ int main(int argc, char** argv)
     exit(1);
   }
 
-
-
-
-  llopen(argv[2], state);
-
+  int fd = openSerial(argv[2], state);
+  llopen(fd, state);
+  llclose(fd,state);
 
   return 0;
 }
