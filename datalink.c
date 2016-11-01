@@ -134,7 +134,9 @@ int llclose(int fd, int flag){
   }
   else {
     setAlarm();
+
     count = 0;
+
     while (count < 3 && STOP == FALSE) {
       // 1st
       char* DISC = (char*) malloc(5 * sizeof(char));
@@ -322,13 +324,41 @@ void setAlarm() {
     printf("Alarm set.\n");
 }
 
-int byteStuffing(char* packet, int size){
+int byteStuffing(char* packet, char* dest, int size) {
+	unsigned int stuffedSize = 0;
 
-  return 0;
+	for (unsigned int i = 0; i < size; ++i) {
+		if (packet[i] == TRAMA_FLAG) {
+			dest[stuffedSize++] = ESCAPE;
+			dest[stuffedSize++] = TRAMA_FLAG ^ REPLACEMENT;
+		} else if (packet[i] == ESCAPE) {
+			dest[stuffedSize++] = ESCAPE;
+			dest[stuffedSize++] = ESCAPE ^ REPLACEMENT;
+		} else {
+			dest[stuffedSize++] = packet[i];
+		}
+	}
+
+	return stuffedSize;
 }
-int byteDestuffing(char* packet, int size){
 
-  return 0;
+int byteDestuffing(char* packet, char* dest, int size) {
+	unsigned int destuffedSize = 0;
+
+	for (unsigned int i = 0; i < size; ++i) {
+		if (i != (size - 1) && packet[i] == 0x7D) {
+            ++i;
+			if (packet[i] == 0x5E) {
+				dest[destuffedSize++] = 0x7E;
+			} else if (packet[i] == 0x5D) {
+				dest[destuffedSize++] = 0x7D;
+			}
+		} else {
+            dest[destuffedSize++] = packet[i];
+        }
+        printf("%u: %02x\n", destuffedSize, dest[destuffedSize]);
+	}
+	return destuffedSize;
 }
 
 char createBCC(char* buffer, int size){

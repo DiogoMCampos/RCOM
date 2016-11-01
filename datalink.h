@@ -44,9 +44,9 @@ int verifyDISC(char * DISC);
 void handleAlarm();
 void setAlarm();
 // TODO - FALTA IMPLEMENTAR
-int byteStuffing(char* packet, int size);
+int byteStuffing(char* packet, char* dest, int size);
 // TODO - FALTA IMPLEMENTAR
-int byteDestuffing(char* packet, int size);
+int byteDestuffing(char* packet, char* dest, int size);
 char createBCC(char* buffer, int size);
 void state_machine(int state, char trama_char, int is_set);
 

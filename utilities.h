@@ -20,7 +20,10 @@
 #define C_RR_1 0x85
 #define C_REJ_0 0x01
 #define C_REJ_1 0x81
+
+
 #define ESCAPE 0X7D
+#define REPLACEMENT 0x20
 
 #define START_STATE 0
 #define FLAG_STATE 1
