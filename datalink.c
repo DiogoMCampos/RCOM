@@ -134,7 +134,7 @@ int llclose(int fd, int flag){
   }
   else {
     setAlarm();
-
+    count = 0;
     while (count < 3 && STOP == FALSE) {
       // 1st
       char* DISC = (char*) malloc(5 * sizeof(char));
