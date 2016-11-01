@@ -167,6 +167,7 @@ int llclose(int fd, int flag){
       char* UA = (char*) malloc(5 * sizeof(char));
       createUA(UA);
       write(fd, UA, 5);
+      printf("UA sent from sender!\n", );
       STOP = TRUE;
       sleep(1);
     }
