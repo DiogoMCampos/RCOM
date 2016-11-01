@@ -38,6 +38,15 @@ void setAlarm() {
     printf("Alarm set.\n");
 }
 
+void createDISC(char* UA)
+{
+    UA[0] = TRAMA_FLAG;
+    UA[1] = A_SENDER;
+    UA[2] = C_DISC;
+    UA[3] = UA[1] ^ UA[2];
+    UA[4] = TRAMA_FLAG;
+}
+
 void createSET(char* SET)
 {
     SET[0] = TRAMA_FLAG;
@@ -56,6 +65,32 @@ int verifyUA(char* UA)
 	    UA[4] != TRAMA_FLAG) {
 	       return -1;
     }
+
+    return 0;
+}
+
+int verifyDISC(int fd, char * SET){
+
+    int i = 0;
+    int res;
+    char buf[255];
+	int counterTrama = 0; // Variable used to verify if the Trama was correctly read
+    char temp;
+    do {
+        res = read(fd,&temp,1);   // returns after 5 chars have been input
+	buf[i] = temp;
+
+	if (buf[i] == TRAMA_FLAG)
+		counterTrama++;
+	i++;
+    } while (counterTrama < 2);
+
+    if (SET[0] != TRAMA_FLAG ||
+    SET[1] != A_SENDER ||
+    SET[2] != C_DISC ||
+    SET[3] != (SET[1] ^ SET[2]) ||
+    SET[4] != TRAMA_FLAG)
+    return -1;
 
     return 0;
 }
