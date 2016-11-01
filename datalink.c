@@ -281,9 +281,10 @@ int unmountTrama(char* TRAMA, char* data, int length, int ctrl_bit){
 
   char data_ctrl = 0;
 
-  for (size_t i = 0; i < length - 7; i++) {
-    data[i] = TRAMA[4+i]
-    data_ctrl = data_ctrl ^ TRAMA[4+i]
+  unsigned int i;
+  for (i = 0; i < length - 7; i++) {
+    data[i] = TRAMA[4+i];
+    data_ctrl = data_ctrl ^ TRAMA[4+i];
   }
 
   if (data_ctrl != TRAMA[length-2]) {

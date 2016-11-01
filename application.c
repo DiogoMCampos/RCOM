@@ -25,6 +25,13 @@ int main(int argc, char** argv)
   int fd = openSerial(argv[2], state);
   llopen(fd, state);
   llclose(fd,state);
+/*
+  char* trama1[255];
+  char* data1[255];
+  char* data2[255];
+
+  createInfTrama(trama1, data1, 255, int ctrl_bit);
+  int un = unmountTrama(char* TRAMA, char* data, int ctrl_bit);*/
 
   return 0;
 }
