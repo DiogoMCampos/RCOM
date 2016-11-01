@@ -1,13 +1,10 @@
 CC = gcc
 CFLAGS = -Wall
 
-all: writenoncanonical noncanonical
+all: application
 
-writenoncanonical: writenoncanonical.c auxiliar.h 
-	$(CC) writenoncanonical.c -o writenoncanonical $(CFLAGS)
-
-noncanonical: noncanonical.c auxiliar.h
-	$(CC) noncanonical.c -o noncanonical $(CFLAGS)
+application: utilities.h datalink.h application.h application.c
+	$(CC) application.c datalink.c -o application $(CFLAGS)
 
 clean:
-	rm -f writenoncanonical noncanonical
+	rm -f application
