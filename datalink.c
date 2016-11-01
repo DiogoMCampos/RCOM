@@ -89,7 +89,7 @@ int llread(int fd, char * buffer){
 }
 
 int llclose(int fd, int flag){
-  printf("CLOSE-------------------------------------------\n");
+  printf("<<<---CLOSE--->>>\n");
   if (flag == RECEIVER) {
     int i = 0;
     int res;
@@ -119,6 +119,8 @@ int llclose(int fd, int flag){
     printf("DISC trama successfully written!\n");
 
     //3rd -------------------------------
+    counterTrama = 0;
+    i = 0;
     do {
       res = read(fd,&temp,1);   // returns after 5 chars have been input
       buf[i] = temp;
