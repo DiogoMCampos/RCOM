@@ -22,17 +22,34 @@ int main(int argc, char** argv)
 		exit(1);
 	}
 
+	if (state == SENDER) {
+		FILE* file = fopen(argv[3], "r+");
+		if(file == NULL){
+	  	printf("File doesn't exist.\n");
+	  	return -1;
+		}else{
+			printf("Input file opened.\n");
+		}
+	}else{
+		FILE* file = fopen(argv[3], "w+");
+		if(file == NULL){
+	  	printf("Failed to create file.\n");
+	  	return -1;
+		}else{
+			printf("Output file created.\n");
+		}
+	}
+
+
+
 	int fd = openSerial(argv[2], state);
 	llopen(fd, state);
 	llclose(fd,state);
-/*
-   char* trama1[255];
-   char* data1[255];
-   char* data2[255];
 
-   createInfTrama(trama1, data1, 255, int ctrl_bit);
-   int un = unmountTrama(char* TRAMA, char* data, int ctrl_bit);*/
+	return 0;
+}
 
+int file_reader(FILE* file){
 	return 0;
 }
 

@@ -7,4 +7,6 @@
 int sender();
 int receiver();
 
+int file_reader(FILE* file);
+
 #endif // APPLICATION_H
