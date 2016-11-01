@@ -331,6 +331,18 @@ int byteDestuffing(char* packet, int size){
   return 0;
 }
 
+char createBCC(char* buffer, int size){
+
+  int i;
+  int bcc = 0;
+
+  for (i = 0; i < size; i++){
+    bcc = bcc^buffer[i];
+  }
+
+  return bcc;
+}
+
 void state_machine(int state, char trama_char, int is_set) {
 
 	switch (state) {
