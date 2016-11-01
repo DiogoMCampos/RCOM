@@ -10,12 +10,11 @@ char charC;
 int llopen(int fd, int flag) {
 	if (flag == RECEIVER) {
 		int i = 0;
-		int res;
 		char buf[255];
 		int counterTrama = 0; // Variable used to verify if the Trama was correctly read
 		char temp;
 		do {
-			res = read(fd,&temp,1);   // returns after 5 chars have been input
+			read(fd, &temp, 1);
 			buf[i] = temp;
 
 			if (buf[i] == TRAMA_FLAG)
@@ -30,8 +29,7 @@ int llopen(int fd, int flag) {
 		char* UA = (char*) malloc(5 * sizeof(char));
 		createUA(UA);
 
-		res = write(fd, UA, 5);
-		printf("%d bytes written\n", res);
+		write(fd, UA, 5);
 		printf("UA successfully written!\n");
 
 	}
@@ -48,7 +46,7 @@ int llopen(int fd, int flag) {
 				alarm(3);
 				alarmFlag = 0;
 			}
-			printf("AQUI\n");
+
 			unsigned char* charC = malloc(sizeof(char));;
 			superviseStateMachine(fd, charC);
 		}
