@@ -141,13 +141,13 @@ int llclose(int fd, int flag){
       createDISC(DISC);
       write(fd, DISC, 5);
       sleep(1);
-/*
+
       if (alarmFlag) {
         printf("Alarm activated.\n");
         alarm(3);
         alarmFlag = 0;
       }
-*/
+
       //2nd
       char* DISC2 = (char*) malloc(5 * sizeof(char));
 
@@ -157,15 +157,15 @@ int llclose(int fd, int flag){
 
       if (verifyDISC(DISC2) == 0) {
         printf("DISC received correctly.\n");
-        STOP = TRUE;
+
       }
 
       //3rd
       char* UA = (char*) malloc(5 * sizeof(char));
       createUA(UA);
       write(fd, UA, 5);
+      STOP = TRUE;
       sleep(1);
-
     }
   }
 
