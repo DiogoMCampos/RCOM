@@ -49,7 +49,7 @@ void setAlarm();
 int byteStuffing(char* packet, char* dest, int size);
 // TODO - FALTA IMPLEMENTAR
 int byteDestuffing(char* packet, char* dest, int size);
-char createBCC(char* buffer, int size);
+char createBCC2(char* buffer, int size);
 void state_machine(int state, char trama_char, int is_set);
 
 

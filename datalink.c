@@ -259,7 +259,7 @@ void createInfTrama(char* TRAMA, char* data, int length, int ctrl_bit) {
 	TRAMA[2] = (ctrl_bit == 1) ? 0b01000000 : 0b00000000;
 	TRAMA[3] = TRAMA[1] ^ TRAMA[2];
 
-	char bcc2 = createBCC(data, length);
+	char bcc2 = createBCC2(data, length);
 
 	char* stuffedData = malloc(sizeof(char) * length * 2);
 	unsigned int stuffedLength = byteStuffing(data, stuffedData, length);
