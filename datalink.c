@@ -271,8 +271,26 @@ void createInfTrama(char* TRAMA, char* data, int length, int ctrl_bit){
   TRAMA[4+length+1] = TRAMA_FLAG;
 }
 
-int unmountTrama(char* TRAMA, char* data){
-  return 1;
+int unmountTrama(char* TRAMA, char* data, int length, int ctrl_bit){
+  if (TRAMA[0] != TRAMA_FLAG ||
+      TRAMA[1] != A_SENDER ||
+      (TRAMA[2] != 0b01000000 && TRAMA[2] != 0b00000000)||
+      TRAMA[3] != (TRAMA[1] ^ TRAMA[2]) ||
+      TRAMA[length-1] != TRAMA_FLAG)
+      return -1;
+
+  char data_ctrl = 0;
+
+  for (size_t i = 0; i < length - 7; i++) {
+    data[i] = TRAMA[4+i]
+    data_ctrl = data_ctrl ^ TRAMA[4+i]
+  }
+
+  if (data_ctrl != TRAMA[length-2]) {
+    return -1;
+  }
+
+  return 0;
 }
 
 void createRR(char* RR, int packet){
