@@ -89,7 +89,7 @@ int llread(int fd, char * buffer){
 }
 
 int llclose(int fd, int flag){
-
+  printf("CLOSE-------------------------------------------\n");
   if (flag == RECEIVER) {
     int i = 0;
     int res;
