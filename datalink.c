@@ -147,8 +147,7 @@ int openSerial(char* port, int type){
   return fd;
 }
 
-void createSET(char* SET)
-{
+void createSET(char* SET){
     SET[0] = TRAMA_FLAG;
     SET[1] = A_SENDER;
     SET[2] = C_SET;
@@ -156,8 +155,7 @@ void createSET(char* SET)
     SET[4] = TRAMA_FLAG;
 }
 
-void createUA(char* UA)
-{
+void createUA(char* UA){
     UA[0] = TRAMA_FLAG;
     UA[1] = A_SENDER;
     UA[2] = C_UA;
@@ -165,8 +163,7 @@ void createUA(char* UA)
     UA[4] = TRAMA_FLAG;
 }
 
-void createDISC(char* DISC)
-{
+void createDISC(char* DISC){
 	DISC[0] = TRAMA_FLAG;
 	DISC[1] = A_SENDER;
 	DISC[2] = C_DISC;
@@ -215,8 +212,7 @@ int verifySET(char * SET){
     return 0;
 }
 
-int verifyUA(char* UA)
-{
+int verifyUA(char* UA){
     if (UA[0] != TRAMA_FLAG ||
 	    UA[1] != A_SENDER ||
 	    UA[2] != C_UA ||
@@ -228,13 +224,13 @@ int verifyUA(char* UA)
     return 0;
 }
 
-int verifyDISC(char * SET){
+int verifyDISC(char * DISC){
 
-    if (SET[0] != TRAMA_FLAG ||
-    SET[1] != A_SENDER ||
-    SET[2] != C_DISC ||
-    SET[3] != (SET[1] ^ SET[2]) ||
-    SET[4] != TRAMA_FLAG)
+    if (DISC[0] != TRAMA_FLAG ||
+    DISC[1] != A_SENDER ||
+    DISC[2] != C_DISC ||
+    DISC[3] != (DISC[1] ^ DISC[2]) ||
+    DISC[4] != TRAMA_FLAG)
     return -1;
 
     return 0;

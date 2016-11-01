@@ -40,7 +40,7 @@ void createRR(char* RR, int packet);
 void createREJ(char* REJ, int packet);
 int verifySET(char * SET);
 int verifyUA(char* UA);
-int verifyDISC(char * SET);
+int verifyDISC(char * DISC);
 void handleAlarm();
 void setAlarm();
 // TODO - FALTA IMPLEMENTAR
