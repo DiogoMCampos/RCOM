@@ -91,29 +91,32 @@ int getNrBytes(int x){
 	return ret;
 }
 
-void control_packet(char* packet, int type, char* name,int size){
+int control_packet(char* packet, int type, char* name, int size) {
 	int i;
 
-	int sizeLen = getNrBytes(size);
+	int sizeLen = 4;
 	int nameLen = strlen(name);
 	int totalLen = sizeLen + nameLen + 5;
 
-	packet = realloc(packet,totalLen);
+	packet = realloc(packet, totalLen);
 	packet[0] = type;
 	packet[1] = 0;
 	packet[2] = sizeLen;
 
 	for (i = 0; i < sizeLen; i++) {
-		packet[3+i] = size >> (8*(sizeLen - 1 - i)) & 0xff;
+		packet[3 + i] = (size >> 8 * i) & 0xff;
 	}
 
 	int j = 3 + sizeLen;
 
 	packet[j] = 1;
-	packet[j+1] = nameLen;
+	packet[j + 1] = nameLen;
+
 	for (i = 0; i < nameLen; i++) {
-		packet[j+2+i] = name[i];
+		packet[j + 2 + i] = name[i];
 	}
+
+	return totalLen;
 }
 
 int data_packet(char* packet, int size, unsigned char packetID){
@@ -135,31 +138,33 @@ int data_packet(char* packet, int size, unsigned char packetID){
 	return sizeTemp;
 }
 
-int unmount_control(char* packet, char* name){
-	if (((int) packet[0] != START) && ((int) packet[0] != END)) {
-		return -1;
-	}
-	if ((int) packet[1] != 0) {
+long int unmount_control(char* packet, char* name) {
+	if (packet[0] != START && packet[0] != END) {
 		return -1;
 	}
 
-	int tempSizeLen = packet[2];
-	int i, sz = 0;
-	for (i = 0; i < tempSizeLen; i++) {
-		sz += packet[3+i] << (8*(tempSizeLen - 1 - i));
+	if ((int) packet[1] != 0) {
+		printf("2\n");
+		return -1;
 	}
-	int j = 3 + tempSizeLen;
+
+	int sizeLen = packet[2];
+
+	long int size = *((uint32_t*) &packet[3]);
+
+	int j = 3 + sizeLen;
 
 	if ((int) packet[j] != 1) {
+		printf("3\n");
 		return -1;
 	}
 
-	int tempNameLen = packet[j+1];
-	name[tempNameLen];
-	for (i = 0; i < tempNameLen; i++) {
-		name[i] = packet[j+2+i];
+	int nameLen = packet[j + 1];
+
+	unsigned int i;
+	for (i = 0; i < nameLen; i++) {
+		name[i] = packet[j + 2 + i];
 	}
 
-
-	return sz;
+	return size;
 }

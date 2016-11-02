@@ -7,6 +7,7 @@
 #include <termios.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <termios.h>
 #include <strings.h>
@@ -30,7 +31,7 @@ int llopen(int fd, int flag);
 int llwrite(int fd, char * buffer, int length, char ctrl_bit);
 int llread(int fd, char * buffer, char ctrl_bit);
 
-// TODO - USAR FLAG AQUI PARA SABER SE Ã‰ O SENDER OU RECEIVER?
+// TODO - USAR FLAG AQUI PARA SABER SE É O SENDER OU RECEIVER?
 int llclose(int fd, int flag);
 int openSerial(char* port, int type);
 void createSET(char* SET);
