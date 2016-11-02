@@ -132,3 +132,30 @@ int data_packet(char* packet, int size, unsigned char packetID){
 
 	return sizeTemp;
 }
+
+int unmount_control(char* packet, char* name){
+	if (((int) packet[0] != START) && ((int) packet[0] != END)) {
+		return -1;
+	}
+	if ((int) packet[1] != 0) {
+		return -1;
+	}
+
+	int tempSizeLen = packet[2];
+	int i, sz = 0;
+	for (i = 0; i < tempSizeLen; i++) {
+		sz += packet[3+i] << (8*(tempSizeLen - 1 - i));
+	}
+	int j = 3 + tempSizeLen;
+
+	if ((int) packet[j] != 1) {
+		return -1;
+	}
+	int tempNameLen = packet[j+1];
+	for (i = 0; i < tempNameLen; i++) {
+		name[i] = packet[j+2+i];
+	}
+
+
+	return sz;
+}
