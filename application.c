@@ -26,20 +26,17 @@ int main(int argc, char** argv)
 		exit(1);
 	}
 
-	char* asd = malloc(255);
-	control_packet(asd,START,"pinguim.gif",1056);
 
-/*
 	int fd = openSerial(argv[2], state);
 	llopen(fd, state);
-*/
+
 	if (state == SENDER) {
-		//sender();
+		sender(argv[3]);
 	}else{
-		//receiver();
+		receiver();
 	}
 
-/*	llclose(fd,state);*/
+	llclose(fd,state);
 
 	return 0;
 }
