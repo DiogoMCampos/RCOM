@@ -65,6 +65,12 @@ int llwrite(int fd, char * buffer, int length, char ctrl_bit) {
 	alarmFlag = 1;
 	STOP = FALSE;
 
+	unsigned int i = 0;
+
+	for (i = 0; i < tramaLength; i++) {
+		printf("%02x\n", (unsigned char) TRAMA[i]);
+	}
+
 	while (count < 3 && STOP == FALSE) {
 		write(fd, TRAMA, tramaLength);
 
@@ -277,6 +283,9 @@ unsigned int createInfTrama(char* TRAMA, char* data, int length, int ctrl_bit) {
 	TRAMA[2] = (ctrl_bit == 1) ? 0b01000000 : 0b00000000;
 	TRAMA[3] = TRAMA[1] ^ TRAMA[2];
 
+	printf("Control bit no create: %02x\n", ctrl_bit);
+	printf("Valor na trama: %02x\n", TRAMA[2]);
+
 	char bcc2 = createBCC2(data, length);
 
 	char* destuffedData = malloc(sizeof(char) * length + 1);
@@ -302,15 +311,17 @@ int unmountTrama(char* TRAMA, char* destuffedData, int trama_length, int ctrl_bi
 		    TRAMA[1] != A_SENDER ||
 		    TRAMA[2] != 0b01000000||
 		    TRAMA[3] != (TRAMA[1] ^ TRAMA[2]) ||
-		    TRAMA[trama_length - 1] != TRAMA_FLAG)
+		    TRAMA[trama_length - 1] != TRAMA_FLAG) {
+			printf("AQUI\n");
 			return -1;
-	} else {
-		if (TRAMA[0] != TRAMA_FLAG ||
-		    TRAMA[1] != A_SENDER ||
-		    TRAMA[2] != 0b00000000||
-		    TRAMA[3] != (TRAMA[1] ^ TRAMA[2]) ||
-		    TRAMA[trama_length - 1] != TRAMA_FLAG)
-			return -1;
+		}
+	} else if (TRAMA[0] != TRAMA_FLAG ||
+	           TRAMA[1] != A_SENDER ||
+	           TRAMA[2] != 0b00000000 ||
+	           TRAMA[3] != (TRAMA[1] ^ TRAMA[2]) ||
+	           TRAMA[trama_length - 1] != TRAMA_FLAG) {
+		printf("CTRL: %02x\n", TRAMA[2]);
+		return -1;
 	}
 
 	char stuffedLength = trama_length - 5;
@@ -328,6 +339,9 @@ int unmountTrama(char* TRAMA, char* destuffedData, int trama_length, int ctrl_bi
 	char bcc2 = createBCC2(data, destuffedLength);
 
 	if (destuffedData[destuffedLength] != bcc2) {
+		printf("Esperado: %02x\n", destuffedData[destuffedLength]);
+		printf("Obtido: %02x\n", bcc2);
+		printf("MERDOU O BCC\n");
 		return -1;
 	}
 
