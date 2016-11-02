@@ -119,11 +119,11 @@ int llread(int fd, char * buffer, char ctrl_bit) {
 	if (destuffedLength != -1) {
 		createRR(response, ctrl_bit);
 		printf("RR sent\n");
+		--destuffedLength;
+		memcpy(buffer, destuffedData, destuffedLength);
 	} else {
 		createREJ(response, ctrl_bit);
 		printf("REJ sent\n");
-		--destuffedLength;
-		memcpy(buffer, destuffedData, destuffedLength);
 	}
 
 	write(fd, response, 5);
