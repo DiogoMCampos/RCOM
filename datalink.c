@@ -38,14 +38,14 @@ int llopen(int fd, int flag) {
 	else {
 		setAlarm();
 
-		while (count < 3 && STOP == FALSE) {
+		while (count < RETRANS_MAX && STOP == FALSE) {
 			char* SET = (char*) malloc(5 * sizeof(char));
 			createSET(SET);
 			write(fd, SET, 5);
 
 			if (alarmFlag) {
 				printf("Alarm activated.\n");
-				alarm(3);
+				alarm(TIME_OUT);
 				alarmFlag = 0;
 			}
 
@@ -70,12 +70,12 @@ int llwrite(int fd, char * buffer, int length, char ctrl_bit) {
 	alarmFlag = 1;
 	STOP = FALSE;
 
-	while (count < 3 && STOP == FALSE) {
+	while (count < RETRANS_MAX && STOP == FALSE) {
 		write(fd, TRAMA, tramaLength);
 
 		if (alarmFlag) {
 			printf("Alarm activated.\n");
-			alarm(3);
+			alarm(TIME_OUT);
 			alarmFlag = 0;
 		}
 
@@ -147,7 +147,7 @@ int llclose(int fd, int flag) {
 		count = 0;
 		alarmFlag = 1;
 
-		while (count < 3 && STOP == FALSE) {
+		while (count < RETRANS_MAX && STOP == FALSE) {
 			char* DISC = (char*) malloc(5 * sizeof(char));
 			createDISC(DISC);
 
@@ -156,7 +156,7 @@ int llclose(int fd, int flag) {
 
 			if (alarmFlag) {
 				printf("Alarm activated.\n");
-				alarm(3);
+				alarm(TIME_OUT);
 				alarmFlag = 0;
 			}
 
@@ -169,7 +169,7 @@ int llclose(int fd, int flag) {
 		count = 0;
 		alarmFlag = 1;
 
-		while (count < 3 && STOP == FALSE) {
+		while (count < RETRANS_MAX && STOP == FALSE) {
 			char* DISC = (char*) malloc(5 * sizeof(char));
 			createDISC(DISC);
 
@@ -178,7 +178,7 @@ int llclose(int fd, int flag) {
 
 			if (alarmFlag) {
 				printf("Alarm activated.\n");
-				alarm(3);
+				alarm(TIME_OUT);
 				alarmFlag = 0;
 			}
 

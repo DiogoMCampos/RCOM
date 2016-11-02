@@ -3,6 +3,10 @@
 int main(int argc, char** argv)
 {
 	int state;
+	if(load_config() != 0){
+		return -1;
+	}
+	printf("%d\n", TIME_OUT);
 
 	if ((strcmp("/dev/ttyS0", argv[2])!=0) && (strcmp("/dev/ttyS1", argv[2])!=0)) {
 		printf("Usage:\n\tex: application SENDER /dev/ttyS1 filename \n\tex: application RECEIVER /dev/ttyS1\n");
@@ -233,4 +237,30 @@ int unmount_data(char *packet, char* dest, unsigned int packetID) {
 	memcpy(dest, packet + 4, size);
 
 	return size;
+}
+
+int load_config() {
+	FILE * conf = fopen(CONFIG_NAME, "r");
+	if (conf == NULL) {
+		printf("ERROR: Opening configuration file!\n");
+		return -1;
+	}else{
+		printf("Configuration file opened\n");
+	}
+	#undef BAUDRATE
+	#undef PACKET_SIZE
+	#undef TIME_OUT
+	#undef RETRANS_MAX
+
+	int baudrate = 0;
+	int packet = 0;
+	int tOut = 0;
+	int rMax = 0;
+
+
+	#define PACKET_SIZE packet
+	#define TIME_OUT tOut
+	#define RETRANS_MAX rMax
+
+	return 0;
 }

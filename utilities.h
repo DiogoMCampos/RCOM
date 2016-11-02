@@ -1,6 +1,8 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 
+#define CONFIG_NAME "config.txt"
+
 #define BAUDRATE B38400
 #define PACKET_SIZE 64
 #define TIME_OUT 3
@@ -36,6 +38,5 @@
 #define C_STATE 3
 #define BCC_STATE 4
 #define STOP_STATE 5
-
 
 #endif // UTILITIES_H
