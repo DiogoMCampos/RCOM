@@ -1,9 +1,5 @@
 #include "application.h"
 
-#define DATA 0x01
-#define START 0x02
-#define END 0x03
-
 int main(int argc, char** argv)
 {
 	int state;
@@ -130,25 +126,6 @@ int control_packet(char* packet, int type, char* name, int size) {
 	return totalLen;
 }
 
-int data_packet(char* packet, int size, unsigned char packetID){
-	char* temp = malloc(size);
-	memcpy(temp, packet, size);
-	unsigned char l2 = (unsigned char)(size / 256);
-	unsigned char l1 = (unsigned char)(size % 256);
-	int sizeTemp = size+4;
-
-	packet = realloc(packet, sizeTemp);
-	packet[0] = DATAPACKET;
-	packet[1] = packetID;
-	packet[2] = l2;
-	packet[3] = l1;
-
-	memcpy(packet+4, temp, size);
-	free(temp);
-
-	return sizeTemp;
-}
-
 long int unmount_control(char* packet, char* name) {
 	if (packet[0] != START && packet[0] != END) {
 		return -1;
@@ -176,4 +153,15 @@ long int unmount_control(char* packet, char* name) {
 	}
 
 	return size;
+}
+
+void data_packet(char* packet, char* dest, int size, unsigned char packetID) {
+	unsigned char L2 = size / 256;
+	unsigned char L1 = size % 256;
+
+	dest[0] = DATA;
+	dest[1] = packetID;
+	dest[2] = L2;
+	dest[3] = L1;
+	memcpy(&dest[4], packet, size);
 }
