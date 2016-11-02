@@ -51,15 +51,17 @@ int sender(char* file){
 		printf("Input file opened.\n");
 	}
 
-	char* st_packet = malloc(255);
+	char* start_packet = malloc(255);
+	char* stop_packet = malloc(255);
 
 	fseek(s_file, 0, SEEK_END);
 	int fl_size = ftell(s_file);
 	fseek(s_file, 0, SEEK_SET);
 
-	printf("!!!!!!!!!!!!!!!!!!!!!!%d\n", fl_size);
-	control_packet(st_packet,START,file,fl_size);
-	control_packet(st_packet,END,file,fl_size);
+	control_packet(start_packet,START,file,fl_size);
+
+
+	control_packet(stop_packet,END,file,fl_size);
 
 	return 0;
 }
