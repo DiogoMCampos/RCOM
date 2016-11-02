@@ -116,19 +116,32 @@ int receiver(int fd) {
 	while (read < size) {
 		int length = 0;
 
+		printf("Antes do llread\n");
+
 		while (length <= 0) {
 			length = llread(fd, frame, ctrl_bit);
 		}
 
+		printf("Depois do llread e antes do malloc do packet\n");
+
 		char* packet = malloc(PACKET_SIZE);
+
+		printf("Depois do malloc do packet\n");
+
 		length = unmount_data(frame, packet, packetID);
+
+		printf("Depois do unmount data\n");
 
 		packetID++;
 		packetID = packetID % 255;
 		ctrl_bit ^= 1;
 		read += length;
 
+		printf("Antes do fwrite\n");
 		fwrite(packet, sizeof(char), length, r_file);
+
+		printf("Depois do fwrite\n");
+
 	}
 
 	free(frame);

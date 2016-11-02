@@ -93,9 +93,10 @@ int llwrite(int fd, char * buffer, int length, char ctrl_bit) {
 int llread(int fd, char * buffer, char ctrl_bit) {
 	unsigned int i = 0;
 	char* TRAMA = malloc(sizeof(char) * 2 * 256 + 6);
-
+	printf("Mallocou a trama\n");
 	int flagCounter = 0;
 
+	printf("vai ler\n");
 	do {
 		read(fd, &TRAMA[i], 1);
 		if (TRAMA[i] == TRAMA_FLAG)
@@ -104,17 +105,19 @@ int llread(int fd, char * buffer, char ctrl_bit) {
 		i++;
 	} while (flagCounter < 2);
 
+	printf("ja leu\n");
+
 	unsigned int tramaLength = i;
 
 	if (tramaLength < 6) {
 		return -1;
 	}
 
-
+	printf("vai mallocar a destuffedData\n");
 	char* destuffedData = malloc(sizeof(char) * tramaLength);
-
+	printf("vai fazer unmount da trama\n");
 	int destuffedLength = unmountTrama(TRAMA, destuffedData, tramaLength, ctrl_bit);
-
+	printf("depois do unmount, antes do malloc da resposta de tamanho 5\n");
 	char* response = malloc(sizeof(char) * 5);
 	if (destuffedLength != -1) {
 		createRR(response, ctrl_bit);
@@ -126,6 +129,8 @@ int llread(int fd, char * buffer, char ctrl_bit) {
 	}
 
 	write(fd, response, 5);
+
+	printf("enviou a resposta\n");
 
 	return destuffedLength;
 }
@@ -315,18 +320,31 @@ int unmountTrama(char* TRAMA, char* destuffedData, int trama_length, int ctrl_bi
 		return -1;
 	}
 
-	char stuffedLength = trama_length - 5;
+	unsigned char stuffedLength = trama_length - 5;
+
+	printf("vai fazer malloc da stuffedData\n");
 	char* stuffedData = malloc(sizeof(char) * stuffedLength);
 
 	unsigned int i = 0;
 
+		printf("vai copiar da trama para a stuffedData\n");
+		printf("stuffedLength: %d\n", stuffedLength);
 	for (i = 0; i < stuffedLength; i++) {
 		stuffedData[i] = TRAMA[4 + i];
+		printf("stuffedData: %02x\n", stuffedData[i]);
+		printf("trama: %02x\n", TRAMA[4 + i]);
 	}
 
+		printf("vai fazer destuffing\n");
 	unsigned int destuffedLength = byteDestuffing(stuffedData, destuffedData, stuffedLength);
+
+		printf("vai fazer malloc da data\n");
 	char* data = malloc(sizeof(char) * destuffedLength);
+
+		printf("vai fazer memcpu\n");
 	memcpy(data, destuffedData, --destuffedLength);
+
+		printf("vai criar o bcc2\n");
 	char bcc2 = createBCC2(data, destuffedLength);
 
 	if (destuffedData[destuffedLength] != bcc2) {
