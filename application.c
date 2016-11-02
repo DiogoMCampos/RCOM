@@ -68,7 +68,6 @@ int sender(int fd, char* file) {
 	// TESTING
 
 	llwrite(fd, start_packet, totalLen, 0);
-	printf("%s\n", start_packet);
 
 	control_packet(stop_packet, END, file, fl_size);
 
@@ -79,8 +78,6 @@ int receiver(int fd) {
 	char* start_packet = malloc(255);
 
 	llread(fd, start_packet, 0);
-	printf("%02x\n", start_packet[0]);
-	printf("%s\n", start_packet);
 	// TESTING
 	char* tempName = malloc(1);
 	int x = unmount_control(start_packet, tempName);
@@ -152,7 +149,6 @@ long int unmount_control(char* packet, char* name) {
 	}
 
 	if ((int) packet[1] != 0) {
-		printf("2\n");
 		return -1;
 	}
 
@@ -163,7 +159,6 @@ long int unmount_control(char* packet, char* name) {
 	int j = 3 + sizeLen;
 
 	if ((int) packet[j] != 1) {
-		printf("3\n");
 		return -1;
 	}
 
