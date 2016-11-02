@@ -36,7 +36,9 @@ int main(int argc, char** argv)
 		receiver(fd);
 	}
 
-	llclose(fd, state);
+	if (llclose(fd, state) != 0) {
+		return -1;
+	}
 
 	return 0;
 }

@@ -185,7 +185,7 @@ int llclose(int fd, int flag) {
 			unsigned char* charC = malloc(sizeof(char));;
 			superviseStateMachine(fd, charC);
 		}
-		//3rd
+
 		char* UA = (char*) malloc(5 * sizeof(char));
 		createUA(UA);
 
@@ -200,8 +200,14 @@ int llclose(int fd, int flag) {
 		return 1;
 	}
 
+	if (STOP == FALSE) {
+		printf("llclose failed!\n");
+		return 1;
+	} else {
+		printf("llclose successful!\n");
+	}
+
 	close(fd);
-	printf("Program finished!\n");
 	return 0;
 }
 
