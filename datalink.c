@@ -11,7 +11,7 @@ int llopen(int fd, int flag) {
 	if (flag == RECEIVER) {
 		int i = 0;
 		char buf[255];
-		int counterTrama = 0; // Variable used to verify if the Trama was correctly read
+		int counterTrama = 0;
 		char temp;
 		do {
 			read(fd, &temp, 1);
@@ -54,7 +54,7 @@ int llopen(int fd, int flag) {
 		alarm(0);
 	}
 
-	return 0;
+	return STOP;
 }
 
 int llwrite(int fd, char * buffer, int length, char ctrl_bit) {
@@ -66,7 +66,7 @@ int llwrite(int fd, char * buffer, int length, char ctrl_bit) {
 	STOP = FALSE;
 
 	while (count < 3 && STOP == FALSE) {
-		write(fd,  TRAMA, tramaLength);
+		write(fd, TRAMA, tramaLength);
 
 		if (alarmFlag) {
 			printf("Alarm activated.\n");
@@ -74,14 +74,14 @@ int llwrite(int fd, char * buffer, int length, char ctrl_bit) {
 			alarmFlag = 0;
 		}
 
-		unsigned char* charC = malloc(sizeof(char));;
+		unsigned char* charC = malloc(sizeof(char));
 		superviseStateMachine(fd, charC);
 
 		if (!(*charC == C_RR_0 && ctrl_bit == 0) &&
-			!(*charC == C_RR_1 && ctrl_bit == 1)) {
-				STOP = FALSE;
-				count++;
-			}
+		    !(*charC == C_RR_1 && ctrl_bit == 1)) {
+			STOP = FALSE;
+			count++;
+		}
 	}
 
 	alarm(0);
@@ -122,16 +122,13 @@ int llread(int fd, char * buffer, char ctrl_bit) {
 	} else {
 		createREJ(response, ctrl_bit);
 		printf("REJ sent\n");
+		--destuffedLength;
+		memcpy(buffer, destuffedData, destuffedLength);
 	}
 
 	write(fd, response, 5);
 
-	/* if success
-	   return numero de caracteres lidos
-	   if fails
-	   return -1 */
-
-	return 0;
+	return destuffedLength;
 }
 
 int llclose(int fd, int flag) {
