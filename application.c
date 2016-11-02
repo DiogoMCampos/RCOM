@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 
 
 	int fd = openSerial(argv[2], state);
-	llopen(fd, state);
+	//llopen(fd, state);
 
 	if (state == SENDER) {
 		sender(argv[3]);
@@ -50,6 +50,17 @@ int sender(char* file){
 	}else{
 		printf("Input file opened.\n");
 	}
+
+	char* st_packet = malloc(255);
+
+	fseek(s_file, 0, SEEK_END);
+	int fl_size = ftell(s_file);
+	fseek(s_file, 0, SEEK_SET);
+
+	printf("!!!!!!!!!!!!!!!!!!!!!!%d\n", fl_size);
+	control_packet(st_packet,START,file,fl_size);
+	control_packet(st_packet,END,file,fl_size);
+
 	return 0;
 }
 
