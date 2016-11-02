@@ -69,25 +69,21 @@ int receiver(int fd) {
 
 	llread(fd, start_packet, 0);
 
-	// TESTING
-	char* tempName = malloc(1);
-	int x = unmount_control(start_packet, tempName);
-	printf("Size of file: %d\n", x);
-	printf("Name of file: %s\n", tempName);
-	// TESTING
+	char* name = malloc(sizeof(char) * 8);
+	int size = unmount_control(start_packet, name);
+	printf("Size of file: %d\n", size);
+	printf("Name of file: %s\n", name);
 
 	char* stop_packet = malloc(255);
 
 	llread(fd, stop_packet, 0);
 
-	// TESTING
-	tempName = malloc(1);
-	x = unmount_control(stop_packet, tempName);
-	printf("Size of file: %d\n", x);
-	printf("Name of file: %s\n", tempName);
-	// TESTING
+	name = malloc(sizeof(char) * 8);
+	size = unmount_control(stop_packet, name);
+	printf("Size of file: %d\n", size);
+	printf("Name of file: %s\n", name);
 
-	FILE* r_file = fopen("asd.txt", "w+");
+	FILE* r_file = fopen(name, "w+");
 	if (r_file == NULL) {
 		printf("Failed to create file.\n");
 		return -1;
