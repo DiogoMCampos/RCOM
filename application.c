@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 	if (state == SENDER) {
 		sender(argv[3]);
 	}else{
-		receiver();
+		receiver(fd);
 	}
 
 	llclose(fd,state);
@@ -66,7 +66,7 @@ int sender(char* file){
 	return 0;
 }
 
-int receiver(){
+int receiver(int fd){
 	FILE* r_file = fopen("asd.txt", "w+");
 	if(r_file == NULL){
 		printf("Failed to create file.\n");
@@ -112,4 +112,23 @@ void control_packet(char* packet, int type, char* name,int size){
 	for (i = 0; i < nameLen; i++) {
 		packet[j+2+i] = name[i];
 	}
+}
+
+int data_packet(char* packet, int size, unsigned char packetID){
+	char* temp = malloc(size);
+	memcpy(temp, packet, size);
+	unsigned char l2 = (unsigned char)(size / 256);
+	unsigned char l1 = (unsigned char)(size % 256);
+	int sizeTemp = size+4;
+
+	packet = realloc(packet, sizeTemp);
+	packet[0] = DATAPACKET;
+	packet[1] = packetID;
+	packet[2] = l2;
+	packet[3] = l1;
+
+	memcpy(packet+4, temp, size);
+	free(temp);
+
+	return sizeTemp;
 }

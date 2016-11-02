@@ -20,6 +20,7 @@
 #define C_RR_1 0x85
 #define C_REJ_0 0x01
 #define C_REJ_1 0x81
+#define DATAPACKET 1
 
 
 #define ESCAPE 0X7D
