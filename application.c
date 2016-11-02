@@ -59,7 +59,10 @@ int sender(char* file){
 	fseek(s_file, 0, SEEK_SET);
 
 	control_packet(start_packet,START,file,fl_size);
-
+	char* tempName = malloc(1);
+	int x = unmount_control(start_packet, tempName);
+	printf("Size of file: %d\n", x);
+	printf("Name of file: %s\n", tempName);
 
 	control_packet(stop_packet,END,file,fl_size);
 
@@ -108,7 +111,6 @@ void control_packet(char* packet, int type, char* name,int size){
 
 	packet[j] = 1;
 	packet[j+1] = nameLen;
-	printf("%d\n", packet[j+1]);
 	for (i = 0; i < nameLen; i++) {
 		packet[j+2+i] = name[i];
 	}
@@ -151,7 +153,9 @@ int unmount_control(char* packet, char* name){
 	if ((int) packet[j] != 1) {
 		return -1;
 	}
+
 	int tempNameLen = packet[j+1];
+	name[tempNameLen];
 	for (i = 0; i < tempNameLen; i++) {
 		name[i] = packet[j+2+i];
 	}
