@@ -226,21 +226,21 @@ void data_packet(char* buffer, char* dest, int size, unsigned int packetID) {
 
 int unmount_data(char *packet, char* dest, unsigned int packetID) {
 	if (packet[0] != DATA ||
-	    packet[1] != packetID) {
-		return -1;
+		packet[1] != packetID) {
+			return -1;
+		}
+
+		unsigned char L1 = packet[2];
+		unsigned char L2 = packet[3];
+
+		int size = 256 * L1 + L2;
+		memcpy(dest, packet + 4, size);
+
+		return size;
 	}
 
-	unsigned char L1 = packet[2];
-	unsigned char L2 = packet[3];
-
-	int size = 256 * L1 + L2;
-	memcpy(dest, packet + 4, size);
-
-	return size;
-}
-
-int load_config() {
-	FILE * conf = fopen(CONFIG_NAME, "r");
+	int load_config() {
+		FILE * conf = fopen(CONFIG_NAME, "r");
 
 
 		int baudrate = 0;
@@ -248,56 +248,56 @@ int load_config() {
 		int tOut = 0;
 		int rMax = 0;
 
-	if (conf == NULL) {
-		printf("ERROR: Opening configuration file!\n");
-		return -1;
-	}else{
-		printf("Configuration file opened\n");
-	}
+		if (conf == NULL) {
+			printf("ERROR: Opening configuration file!\n");
+			return -1;
+		}else{
+			printf("Configuration file opened\n");
+		}
 
-	char *line = malloc(256);
-	   size_t length;
+		char *line = malloc(256);
+		size_t length;
 
-		 if(getline(&line, &length, conf) == -1){
-			 printf("Failed to read BAUDRATE\n");
-			 exit(1);
-	   }
-	   baudrate = strtol(line, NULL, 20);
+		if(getline(&line, &length, conf) == -1){
+			printf("Failed to read BAUDRATE\n");
+			exit(1);
+		}
+		baudrate = strtol(line, NULL, 10);
 
-		 if(getline(&line, &length, conf) == -1){
-			 printf("Failed to read PACKET_SIZE\n");
-			 exit(1);
-		 }
-		 packet = strtol(line, NULL, 20);
-		 if(packet < 1){
-			 printf("Rejected PACKET_SIZE, using PACKET_SIZE 128\n");
-			 packet = 128;
-		 }
+		if(getline(&line, &length, conf) == -1){
+			printf("Failed to read PACKET_SIZE\n");
+			exit(1);
+		}
+		packet = strtol(line, NULL, 10);
+		if(packet < 1){
+			printf("PACKET_SIZE rejected, using PACKET_SIZE 128\n");
+			packet = 128;
+		}
 
-	   if(getline(&line, &length, conf) == -1){
-			 printf("Failed to read TIME_OUT\n");
-			 exit(1);
-	   }
- 	 	tOut = strtol(line, NULL, 20);
-	  if(tOut < 1){
+		if(getline(&line, &length, conf) == -1){
+			printf("Failed to read TIME_OUT\n");
+			exit(1);
+		}
+		tOut = strtol(line, NULL, 10);
+		if(tOut < 1){
 			printf("TIME_OUT rejected, using TIME_OUT 3\n");
-	  	tOut = 3;
-	  }
+			tOut = 3;
+		}
 
-	   if(getline(&line, &length, conf) == -1){
-			 printf("Failed to read RETRANS_MAX\n");
-			 exit(1);
-	   }
-	   rMax = strtol(line, NULL, 20);
-	   if(rMax < 1){
-			 printf("Rejected RETRANS_MAX, using  3\n");
-	  	 rMax = 3;
-	   }
+		if(getline(&line, &length, conf) == -1){
+			printf("Failed to read RETRANS_MAX\n");
+			exit(1);
+		}
+		rMax = strtol(line, NULL, 10);
+		if(rMax < 1){
+			printf("Rejected RETRANS_MAX, using  3\n");
+			rMax = 3;
+		}
 
 
 		printf("bd %d\n", baudrate);
- 		printf("pck %d\n", packet);
- 		printf("t %d\n", tOut);
- 		printf("rt %d\n", rMax);
-	return 0;
-}
+		printf("pck %d\n", packet);
+		printf("t %d\n", tOut);
+		printf("rt %d\n", rMax);
+		return 0;
+	}
