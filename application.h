@@ -8,7 +8,7 @@
 #define START 0x02
 #define END 0x03
 
-#define PACKET_SIZE 512
+#define PACKET_SIZE 64
 
 int sender(int fd, char* file);
 int receiver(int fd);
