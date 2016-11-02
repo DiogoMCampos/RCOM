@@ -28,7 +28,8 @@ int main(int argc, char** argv)
 
 
 	int fd = openSerial(argv[2], state);
-	//llopen(fd, state);
+
+	llopen(fd, state);
 
 	if (state == SENDER) {
 		sender(fd, argv[3]);
@@ -59,17 +60,10 @@ int sender(int fd, char* file) {
 	fseek(s_file, 0, SEEK_SET);
 
 	unsigned int totalLen = control_packet(start_packet, START, file, fl_size);
-
-	// TESTING
-	char* tempName = malloc(1);
-	int x = unmount_control(start_packet, tempName);
-	printf("Size of file: %d\n", x);
-	printf("Name of file: %s\n", tempName);
-	// TESTING
-
 	llwrite(fd, start_packet, totalLen, 0);
 
-	control_packet(stop_packet, END, file, fl_size);
+	totalLen = control_packet(stop_packet, END, file, fl_size);
+	llwrite(fd, stop_packet, totalLen, 0);
 
 	return 0;
 }
@@ -78,9 +72,21 @@ int receiver(int fd) {
 	char* start_packet = malloc(255);
 
 	llread(fd, start_packet, 0);
+
 	// TESTING
 	char* tempName = malloc(1);
 	int x = unmount_control(start_packet, tempName);
+	printf("Size of file: %d\n", x);
+	printf("Name of file: %s\n", tempName);
+	// TESTING
+
+	char* stop_packet = malloc(255);
+
+	llread(fd, stop_packet, 0);
+
+	// TESTING
+	tempName = malloc(1);
+	x = unmount_control(stop_packet, tempName);
 	printf("Size of file: %d\n", x);
 	printf("Name of file: %s\n", tempName);
 	// TESTING
