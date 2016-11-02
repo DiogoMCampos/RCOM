@@ -25,7 +25,10 @@ int main(int argc, char** argv)
 
 	int fd = openSerial(argv[2], state);
 
-	llopen(fd, state);
+	if (llopen(fd, state) == FALSE) {
+		printf("llopen failed!\n");
+		return -1;
+	}
 
 	if (state == SENDER) {
 		sender(fd, argv[3]);

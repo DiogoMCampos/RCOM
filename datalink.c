@@ -17,21 +17,23 @@ int llopen(int fd, int flag) {
 			read(fd, &temp, 1);
 			buf[i] = temp;
 
-			if (buf[i] == TRAMA_FLAG)
+			if (buf[i] == TRAMA_FLAG) {
 				counterTrama++;
+			}
+
 			i++;
 		} while (counterTrama < 2);
 
-		if (verifySET(buf) == 0)
-			printf("SET trama successfully received!\n");
+		if (verifySET(buf) == 0) {
+			STOP = TRUE;
 
-		// Creating Trama
-		char* UA = (char*) malloc(5 * sizeof(char));
-		createUA(UA);
+			char* UA = (char*) malloc(5 * sizeof(char));
+			createUA(UA);
 
-		write(fd, UA, 5);
-		printf("UA successfully written!\n");
+			write(fd, UA, 5);
 
+			printf("llopen successful!\n");
+		}
 	}
 	else {
 		setAlarm();
@@ -52,6 +54,9 @@ int llopen(int fd, int flag) {
 		}
 
 		alarm(0);
+		if (STOP == TRUE) {
+			printf("llopen successful!\n");
+		}
 	}
 
 	return STOP;
