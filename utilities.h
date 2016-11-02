@@ -2,6 +2,10 @@
 #define UTILITIES_H
 
 #define BAUDRATE B38400
+#define PACKET_SIZE 64
+#define TIME_OUT 3
+#define RETRANS_MAX 3
+
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
 #define MAX_SIZE 255
 #define FALSE 0
