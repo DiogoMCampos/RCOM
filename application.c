@@ -1,12 +1,13 @@
 #include "application.h"
 
+
+
 int main(int argc, char** argv)
 {
 	int state;
 	if(load_config() != 0){
 		return -1;
 	}
-	printf("%d\n", TIME_OUT);
 
 	if ((strcmp("/dev/ttyS0", argv[2])!=0) && (strcmp("/dev/ttyS1", argv[2])!=0)) {
 		printf("Usage:\n\tex: application SENDER /dev/ttyS1 filename \n\tex: application RECEIVER /dev/ttyS1\n");
@@ -67,13 +68,13 @@ int sender(int fd, char* file) {
 	unsigned int totalLen = control_packet(start_packet, START, file, fl_size);
 	llwrite(fd, start_packet, totalLen, 0);
 
-	char *data = malloc(PACKET_SIZE);
+	char *data = malloc(config.packet_size);
 	char ctrl_bit = 0;
 	char packetID = 0;
 	long int written = 0;
 
 	while (written < fl_size) {
-		int read = fread(data, 1,  PACKET_SIZE, s_file);
+		int read = fread(data, 1,  config.packet_size, s_file);
 		int frame_size = read + 4;
 
 		char *packet = malloc(sizeof(char) * frame_size);
@@ -116,7 +117,7 @@ int receiver(int fd) {
 		printf("Output file created.\n");
 	}
 
-	int frame_size = PACKET_SIZE + 4;
+	int frame_size = config.packet_size + 4;
 	char *frame = malloc(frame_size);
 	char ctrl_bit = 0;
 	char packetID = 0;
@@ -129,7 +130,7 @@ int receiver(int fd) {
 			length = llread(fd, frame, ctrl_bit);
 		}
 
-		char* packet = malloc(PACKET_SIZE);
+		char* packet = malloc(config.packet_size);
 
 		length = unmount_data(frame, packet, packetID);
 
@@ -294,10 +295,32 @@ int unmount_data(char *packet, char* dest, unsigned int packetID) {
 			rMax = 3;
 		}
 
+		switch (baudrate) {
+			case 9600:
+				config.baudrate = B9600;
+				break;
+			case 19200:
+				config.baudrate = B19200;
+				break;
+			case 38400:
+				config.baudrate = B38400;
+				break;
+			case 57600:
+				config.baudrate = B57600;
+				break;
+			case 115200:
+				config.baudrate = B115200;
+				break;
+			default:
+			config.baudrate = B38400;
+				printf("Rejected baudrate using 38400!\n");
+				break;
+		}
 
-		printf("bd %d\n", baudrate);
-		printf("pck %d\n", packet);
-		printf("t %d\n", tOut);
-		printf("rt %d\n", rMax);
+		config.packet_size = packet;
+		config.time_out = tOut;
+		config.retrans_max = rMax;
+
+
 		return 0;
 	}

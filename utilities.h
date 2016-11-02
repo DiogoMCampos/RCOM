@@ -3,10 +3,15 @@
 
 #define CONFIG_NAME "config.txt"
 
-#define BAUDRATE B38400
-#define PACKET_SIZE 64
-#define TIME_OUT 3
-#define RETRANS_MAX 3
+
+struct Configuration{
+  int baudrate;
+  unsigned int packet_size;
+  unsigned int time_out;
+  unsigned int retrans_max;
+};
+
+struct Configuration config;
 
 #define _POSIX_SOURCE 1 /* POSIX compliant source */
 #define MAX_SIZE 255
