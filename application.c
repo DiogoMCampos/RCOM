@@ -146,8 +146,7 @@ int data_packet(char* packet, int size, unsigned char packetID){
 	return sizeTemp;
 }
 
-long int unmount_control(char* packet, char* name){
-	printf("%02x\n", packet[0]);
+long int unmount_control(char* packet, char* name) {
 	if (packet[0] != START && packet[0] != END) {
 		return -1;
 	}
