@@ -64,20 +64,12 @@ int sender(int fd, char* file) {
 	long int written = 0;
 
 	while (written < fl_size) {
-		printf("Control bit: %02x\n", ctrl_bit);
 		int read = fread(data, 1,  PACKET_SIZE, s_file);
-		printf("%d", read);
 		int frame_size = read + 4;
 
 		char *packet = malloc(sizeof(char) * frame_size);
 
 		data_packet(data, packet, read, packetID);
-/*
-        unsigned int i = 0;
-        printf("--------------- Read: %d ---------------\n", read);
-        for (i = 0; i < frame_size; i++) {
-            printf("%02x\n", packet[i]);
-        }*/
 
 		packetID++;
 		packetID = packetID % 255;
@@ -130,11 +122,6 @@ int receiver(int fd) {
 
 		char* packet = malloc(PACKET_SIZE);
 		length = unmount_data(frame, packet, packetID);
-
-		unsigned int i = 0;
-		for (i = 0; i < length; i++) {
-			printf("%02x\n", packet[i]);
-		}
 
 		packetID++;
 		packetID = packetID % 255;
@@ -230,8 +217,6 @@ void data_packet(char* buffer, char* dest, int size, unsigned int packetID) {
 int unmount_data(char *packet, char* dest, unsigned int packetID) {
 	if (packet[0] != DATA ||
 	    packet[1] != packetID) {
-		printf("%d\n", packet[0]);
-		printf("%d\n", packet[1]);
 		return -1;
 	}
 

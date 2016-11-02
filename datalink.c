@@ -65,12 +65,6 @@ int llwrite(int fd, char * buffer, int length, char ctrl_bit) {
 	alarmFlag = 1;
 	STOP = FALSE;
 
-	unsigned int i = 0;
-
-	for (i = 0; i < tramaLength; i++) {
-		printf("%02x\n", (unsigned char) TRAMA[i]);
-	}
-
 	while (count < 3 && STOP == FALSE) {
 		write(fd, TRAMA, tramaLength);
 
@@ -282,9 +276,6 @@ unsigned int createInfTrama(char* TRAMA, char* data, int length, int ctrl_bit) {
 	TRAMA[1] = A_SENDER;
 	TRAMA[2] = (ctrl_bit == 1) ? 0b01000000 : 0b00000000;
 	TRAMA[3] = TRAMA[1] ^ TRAMA[2];
-
-	printf("Control bit no create: %02x\n", ctrl_bit);
-	printf("Valor na trama: %02x\n", TRAMA[2]);
 
 	char bcc2 = createBCC2(data, length);
 
