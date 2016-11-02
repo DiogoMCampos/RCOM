@@ -241,26 +241,63 @@ int unmount_data(char *packet, char* dest, unsigned int packetID) {
 
 int load_config() {
 	FILE * conf = fopen(CONFIG_NAME, "r");
+
+
+		int baudrate = 0;
+		int packet = 0;
+		int tOut = 0;
+		int rMax = 0;
+
 	if (conf == NULL) {
 		printf("ERROR: Opening configuration file!\n");
 		return -1;
 	}else{
 		printf("Configuration file opened\n");
 	}
-	#undef BAUDRATE
-	#undef PACKET_SIZE
-	#undef TIME_OUT
-	#undef RETRANS_MAX
 
-	int baudrate = 0;
-	int packet = 0;
-	int tOut = 0;
-	int rMax = 0;
+	char *line = malloc(256);
+	   size_t length;
+
+		 if(getline(&line, &length, conf) == -1){
+			 printf("Failed to read BAUDRATE\n");
+			 exit(1);
+	   }
+	   baudrate = strtol(line, NULL, 20);
+
+		 if(getline(&line, &length, conf) == -1){
+			 printf("Failed to read PACKET_SIZE\n");
+			 exit(1);
+		 }
+		 packet = strtol(line, NULL, 20);
+		 if(packet < 1){
+			 printf("Rejected PACKET_SIZE, using PACKET_SIZE 128\n");
+			 packet = 128;
+		 }
+
+	   if(getline(&line, &length, conf) == -1){
+			 printf("Failed to read TIME_OUT\n");
+			 exit(1);
+	   }
+ 	 	tOut = strtol(line, NULL, 20);
+	  if(tOut < 1){
+			printf("TIME_OUT rejected, using TIME_OUT 3\n");
+	  	tOut = 3;
+	  }
+
+	   if(getline(&line, &length, conf) == -1){
+			 printf("Failed to read RETRANS_MAX\n");
+			 exit(1);
+	   }
+	   rMax = strtol(line, NULL, 20);
+	   if(rMax < 1){
+			 printf("Rejected RETRANS_MAX, using  3\n");
+	  	 rMax = 3;
+	   }
 
 
-	#define PACKET_SIZE packet
-	#define TIME_OUT tOut
-	#define RETRANS_MAX rMax
-
+		printf("bd %d\n", baudrate);
+ 		printf("pck %d\n", packet);
+ 		printf("t %d\n", tOut);
+ 		printf("rt %d\n", rMax);
 	return 0;
 }
