@@ -92,13 +92,12 @@ int llwrite(int fd, char * buffer, int length, char ctrl_bit) {
 
 int llread(int fd, char * buffer, char ctrl_bit) {
 	unsigned int i = 0;
-	char* TRAMA = malloc(sizeof(char) * 2 * 8 + 6);
+	char* TRAMA = malloc(sizeof(char) * 2 * 256 + 6);
 
 	int flagCounter = 0;
 
 	do {
 		read(fd, &TRAMA[i], 1);
-
 		if (TRAMA[i] == TRAMA_FLAG)
 			flagCounter++;
 
@@ -111,6 +110,7 @@ int llread(int fd, char * buffer, char ctrl_bit) {
 		return -1;
 	}
 
+
 	char* destuffedData = malloc(sizeof(char) * tramaLength);
 
 	int destuffedLength = unmountTrama(TRAMA, destuffedData, tramaLength, ctrl_bit);
@@ -119,7 +119,6 @@ int llread(int fd, char * buffer, char ctrl_bit) {
 	if (destuffedLength != -1) {
 		createRR(response, ctrl_bit);
 		printf("RR sent\n");
-		--destuffedLength;
 		memcpy(buffer, destuffedData, destuffedLength);
 	} else {
 		createREJ(response, ctrl_bit);
@@ -281,21 +280,20 @@ unsigned int createInfTrama(char* TRAMA, char* data, int length, int ctrl_bit) {
 	char bcc2 = createBCC2(data, length);
 
 	char* destuffedData = malloc(sizeof(char) * length + 1);
-	memcpy(data, destuffedData, length);
-	destuffedData[length - 1] = bcc2;
+	memcpy(destuffedData, data, length);
+	destuffedData[length] = bcc2;
 
 	char* stuffedData = malloc(sizeof(char) * length * 2);
-	unsigned int stuffedLength = byteStuffing(destuffedData, stuffedData, length);
+	unsigned int stuffedLength = byteStuffing(destuffedData, stuffedData, length + 1);
 
 	unsigned int i = 0;
-
 	for (i = 0; i < stuffedLength; i++) {
 		TRAMA[4 + i] = stuffedData[i];
 	}
 
-	TRAMA[4 + stuffedLength + 1] = TRAMA_FLAG;
+	TRAMA[4 + stuffedLength] = TRAMA_FLAG;
 
-	return stuffedLength + 6;
+	return stuffedLength + 5;
 }
 
 int unmountTrama(char* TRAMA, char* destuffedData, int trama_length, int ctrl_bit) {
@@ -325,11 +323,11 @@ int unmountTrama(char* TRAMA, char* destuffedData, int trama_length, int ctrl_bi
 	}
 
 	unsigned int destuffedLength = byteDestuffing(stuffedData, destuffedData, stuffedLength);
-
 	char* data = malloc(sizeof(char) * destuffedLength);
+	memcpy(data, destuffedData, --destuffedLength);
 	char bcc2 = createBCC2(data, destuffedLength);
 
-	if (destuffedData[destuffedLength - 1] != bcc2) {
+	if (destuffedData[destuffedLength] != bcc2) {
 		return -1;
 	}
 
@@ -413,7 +411,7 @@ void setAlarm() {
 int byteStuffing(char* packet, char* dest, int size) {
 	unsigned int stuffedSize = 0;
 	unsigned int i;
-	for (i = 0; i < size; ++i) {
+	for (i = 0; i < size; i++) {
 		if (packet[i] == TRAMA_FLAG) {
 			dest[stuffedSize++] = ESCAPE;
 			dest[stuffedSize++] = TRAMA_FLAG ^ REPLACEMENT;

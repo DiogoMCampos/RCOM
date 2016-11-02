@@ -31,8 +31,8 @@ int main(int argc, char** argv)
 	//llopen(fd, state);
 
 	if (state == SENDER) {
-		sender(argv[3]);
-	}else{
+		sender(fd, argv[3]);
+	} else {
 		receiver(fd);
 	}
 
@@ -41,13 +41,13 @@ int main(int argc, char** argv)
 	return 0;
 }
 
-int sender(char* file){
-
+int sender(int fd, char* file) {
 	FILE* s_file = fopen(file, "r+");
-	if(s_file == NULL){
+
+	if(s_file == NULL) {
 		printf("File doesn't exist.\n");
 		return -1;
-	}else{
+	} else {
 		printf("Input file opened.\n");
 	}
 
@@ -58,62 +58,73 @@ int sender(char* file){
 	int fl_size = ftell(s_file);
 	fseek(s_file, 0, SEEK_SET);
 
-	control_packet(start_packet,START,file,fl_size);
+	unsigned int totalLen = control_packet(start_packet, START, file, fl_size);
+
+	// TESTING
 	char* tempName = malloc(1);
 	int x = unmount_control(start_packet, tempName);
 	printf("Size of file: %d\n", x);
 	printf("Name of file: %s\n", tempName);
+	// TESTING
 
-	control_packet(stop_packet,END,file,fl_size);
+	llwrite(fd, start_packet, totalLen, 0);
+	printf("%s\n", start_packet);
+
+	control_packet(stop_packet, END, file, fl_size);
 
 	return 0;
 }
 
-int receiver(int fd){
+int receiver(int fd) {
+	char* start_packet = malloc(255);
+
+	llread(fd, start_packet, 0);
+	printf("%02x\n", start_packet[0]);
+	printf("%s\n", start_packet);
+	// TESTING
+	char* tempName = malloc(1);
+	int x = unmount_control(start_packet, tempName);
+	printf("Size of file: %d\n", x);
+	printf("Name of file: %s\n", tempName);
+	// TESTING
+
 	FILE* r_file = fopen("asd.txt", "w+");
-	if(r_file == NULL){
+	if (r_file == NULL) {
 		printf("Failed to create file.\n");
 		return -1;
-	}else{
+	} else {
 		printf("Output file created.\n");
 	}
 
 	return 0;
 }
 
-int getNrBytes(int x){
-	int ret = 0;
-	while (x != 0) {
-		x >>= 8;
-		ret++;
-	}
-
-	return ret;
-}
-
-void control_packet(char* packet, int type, char* name,int size){
+int control_packet(char* packet, int type, char* name, int size) {
 	int i;
 
-	int sizeLen = getNrBytes(size);
+	int sizeLen = 4;
 	int nameLen = strlen(name);
 	int totalLen = sizeLen + nameLen + 5;
 
-	packet = realloc(packet,totalLen);
+	packet = realloc(packet, totalLen);
 	packet[0] = type;
 	packet[1] = 0;
 	packet[2] = sizeLen;
 
 	for (i = 0; i < sizeLen; i++) {
-		packet[3+i] = size >> (8*(sizeLen - 1 - i)) & 0xff;
+		packet[3 + i] = (size >> 8 * i) & 0xff;
 	}
 
 	int j = 3 + sizeLen;
 
 	packet[j] = 1;
-	packet[j+1] = nameLen;
+	packet[j + 1] = nameLen;
+
 	for (i = 0; i < nameLen; i++) {
-		packet[j+2+i] = name[i];
+		packet[j + 2 + i] = name[i];
 	}
+
+	return totalLen;
 }
 
 int data_packet(char* packet, int size, unsigned char packetID){
@@ -135,31 +146,34 @@ int data_packet(char* packet, int size, unsigned char packetID){
 	return sizeTemp;
 }
 
-int unmount_control(char* packet, char* name){
-	if (((int) packet[0] != START) && ((int) packet[0] != END)) {
-		return -1;
-	}
-	if ((int) packet[1] != 0) {
+long int unmount_control(char* packet, char* name){
+	printf("%02x\n", packet[0]);
+	if (packet[0] != START && packet[0] != END) {
 		return -1;
 	}
 
-	int tempSizeLen = packet[2];
-	int i, sz = 0;
-	for (i = 0; i < tempSizeLen; i++) {
-		sz += packet[3+i] << (8*(tempSizeLen - 1 - i));
+	if ((int) packet[1] != 0) {
+		printf("2\n");
+		return -1;
 	}
-	int j = 3 + tempSizeLen;
+
+	int sizeLen = packet[2];
+
+	long int size = *((uint32_t*) &packet[3]);
+
+	int j = 3 + sizeLen;
 
 	if ((int) packet[j] != 1) {
+		printf("3\n");
 		return -1;
 	}
 
-	int tempNameLen = packet[j+1];
-	name[tempNameLen];
-	for (i = 0; i < tempNameLen; i++) {
-		name[i] = packet[j+2+i];
+	int nameLen = packet[j + 1];
+
+	unsigned int i;
+	for (i = 0; i < nameLen; i++) {
+		name[i] = packet[j + 2 + i];
 	}
 
-
-	return sz;
+	return size;
 }

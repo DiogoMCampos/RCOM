@@ -4,10 +4,9 @@
 #include "datalink.h"
 #include "utilities.h"
 
-int sender(char* file);
-int receiver();
+int sender(int fd, char* file);
+int receiver(int fd);
 
-int getNrBytes(int x);
-void control_packet(char* packet, int type, char* name,int size);
-int unmount_control(char* packet, char* name);
+int control_packet(char* packet, int type, char* name, int size);
+long int unmount_control(char* packet, char* name);
 #endif // APPLICATION_H
