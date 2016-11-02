@@ -13,5 +13,6 @@ int receiver(int fd);
 
 int control_packet(char* packet, int type, char* name, int size);
 long int unmount_control(char* packet, char* name);
-void data_packet(char* packet, char* dest, int size, unsigned char packetID);
+void data_packet(char* buffer, char* dest, int size, unsigned int packetID);
+int unmount_data(char *packet, char* dest, unsigned int packetID);
 #endif // APPLICATION_H

@@ -155,7 +155,7 @@ long int unmount_control(char* packet, char* name) {
 	return size;
 }
 
-void data_packet(char* packet, char* dest, int size, unsigned char packetID) {
+void data_packet(char* buffer, char* dest, int size, unsigned int packetID) {
 	unsigned char L2 = size / 256;
 	unsigned char L1 = size % 256;
 
@@ -163,5 +163,21 @@ void data_packet(char* packet, char* dest, int size, unsigned char packetID) {
 	dest[1] = packetID;
 	dest[2] = L2;
 	dest[3] = L1;
-	memcpy(&dest[4], packet, size);
+	memcpy(dest + 4, buffer, size);
+}
+
+
+int unmount_data(char *packet, char* dest, unsigned int packetID) {
+    if (packet[0] != DATA ||
+		packet[1] != packetID) {
+		return -1;
+	}
+
+    unsigned char L1 = packet[2];
+    unsigned char L2 = packet[3];
+
+    int size = 256 * L1 + L2;
+	memcpy(dest, packet + 4, size);
+
+    return size;
 }
