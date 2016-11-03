@@ -30,7 +30,7 @@ int llopen(int fd, int flag) {
 			createUA(UA);
 
 			write(fd, UA, 5);
-
+			free(UA);
 			printf("llopen successful!\n");
 		}
 	}
@@ -38,6 +38,7 @@ int llopen(int fd, int flag) {
 		setAlarm();
 
 		while (count < config.retrans_max && STOP == FALSE) {
+			printf("llopen\n");
 			char* SET = (char*) malloc(5 * sizeof(char));
 			createSET(SET);
 			write(fd, SET, 5);
@@ -50,6 +51,7 @@ int llopen(int fd, int flag) {
 
 			unsigned char* charC = malloc(sizeof(char));
 			superviseStateMachine(fd, charC);
+			free(SET);
 		}
 
 		alarm(0);
@@ -70,6 +72,7 @@ int llwrite(int fd, char * buffer, int length, char ctrl_bit) {
 	STOP = FALSE;
 
 	while (count < config.retrans_max && STOP == FALSE) {
+		printf("llwrite\n");
 		write(fd, TRAMA, tramaLength);
 
 		if (alarmFlag) {
@@ -86,6 +89,8 @@ int llwrite(int fd, char * buffer, int length, char ctrl_bit) {
 			STOP = FALSE;
 			count++;
 		}
+
+		free(charC);
 	}
 
 	alarm(0);
@@ -127,6 +132,10 @@ int llread(int fd, char * buffer, char ctrl_bit) {
 
 	write(fd, response, 5);
 
+	free(TRAMA);
+	free(destuffedData);
+	free(response);
+
 	return destuffedLength;
 }
 
@@ -161,6 +170,8 @@ int llclose(int fd, int flag) {
 
 			unsigned char* charC = malloc(sizeof(char));
 			superviseStateMachine(fd, charC);
+			free(DISC);
+			free(charC);
 		}
 	}
 	else {
@@ -183,12 +194,15 @@ int llclose(int fd, int flag) {
 
 			unsigned char* charC = malloc(sizeof(char));
 			superviseStateMachine(fd, charC);
+			free(DISC);
+			free(charC);
 		}
 
 		char* UA = (char*) malloc(5 * sizeof(char));
 		createUA(UA);
 
 		write(fd, UA, 5);
+		free(UA);
 		printf("UA trama successfully written!\n");
 	}
 
@@ -299,6 +313,9 @@ unsigned int createInfTrama(char* TRAMA, char* data, int length, int ctrl_bit) {
 
 	TRAMA[4 + stuffedLength] = TRAMA_FLAG;
 
+	free(destuffedData);
+	free(stuffedData);
+
 	return stuffedLength + 5;
 }
 
@@ -335,6 +352,9 @@ int unmountTrama(char* TRAMA, char* destuffedData, int trama_length, int ctrl_bi
 	if (destuffedData[destuffedLength] != bcc2) {
 		return -1;
 	}
+
+	free(stuffedData);
+	free(data);
 
 	return destuffedLength;
 }
