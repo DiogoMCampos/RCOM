@@ -16,9 +16,6 @@
 #include <signal.h>
 #include "utilities.h"
 
-#define OPEN_SENDER O_RDWR | O_NOCTTY | O_NONBLOCK
-#define OPEN_RECEIVER O_RDWR | O_NOCTTY
-
 struct linkLayer {
 	char* port; /*Device /dev/ttySx, x = 0, 1*/
 	unsigned int numTransmissions; /*Number of trys if fails occurs*/
@@ -27,12 +24,19 @@ struct linkLayer {
 	struct termios newtio;
 };
 
+struct Configuration{
+  int baudrate;
+  unsigned int packet_size;
+  unsigned int time_out;
+  unsigned int retrans_max;
+};
+
+struct linkLayer dataLink;
+struct Configuration config;
 
 int llopen(int fd, int flag);
 int llwrite(int fd, char * buffer, int length, char ctrl_bit);
 int llread(int fd, char * buffer, char ctrl_bit);
-
-// TODO - USAR FLAG AQUI PARA SABER SE É O SENDER OU RECEIVER?
 int llclose(int fd, int flag);
 int openSerial(char* port, int type);
 void createSET(char* SET);
@@ -47,9 +51,7 @@ int verifyUA(char* UA);
 int verifyDISC(char * DISC);
 void handleAlarm();
 void setAlarm();
-// TODO - FALTA IMPLEMENTAR
 int byteStuffing(char* packet, char* dest, int size);
-// TODO - FALTA IMPLEMENTAR
 int byteDestuffing(char* packet, char* dest, int size);
 char createBCC2(char* buffer, int size);
 void state_machine(int state, char trama_char, int is_set);

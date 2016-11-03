@@ -1,6 +1,5 @@
 #include "datalink.h"
 
-struct linkLayer dataLink;
 int alarmFlag = 1, count = 0;
 volatile int STOP=FALSE;
 int machine_state = 0;
@@ -49,7 +48,7 @@ int llopen(int fd, int flag) {
 				alarmFlag = 0;
 			}
 
-			unsigned char* charC = malloc(sizeof(char));;
+			unsigned char* charC = malloc(sizeof(char));
 			superviseStateMachine(fd, charC);
 		}
 
@@ -136,7 +135,7 @@ int llclose(int fd, int flag) {
 		STOP = FALSE;
 		alarmFlag = 0;
 
-		unsigned char* charC = malloc(sizeof(char));;
+		unsigned char* charC = malloc(sizeof(char));
 		superviseStateMachine(fd, charC);
 
 		if (STOP == TRUE) {
@@ -160,7 +159,7 @@ int llclose(int fd, int flag) {
 				alarmFlag = 0;
 			}
 
-			unsigned char* charC = malloc(sizeof(char));;
+			unsigned char* charC = malloc(sizeof(char));
 			superviseStateMachine(fd, charC);
 		}
 	}
@@ -182,7 +181,7 @@ int llclose(int fd, int flag) {
 				alarmFlag = 0;
 			}
 
-			unsigned char* charC = malloc(sizeof(char));;
+			unsigned char* charC = malloc(sizeof(char));
 			superviseStateMachine(fd, charC);
 		}
 
