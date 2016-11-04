@@ -231,10 +231,10 @@ int unmount_data(char *packet, char* dest, unsigned int packetID) {
 			return -1;
 		}
 
-		unsigned char L1 = packet[2];
-		unsigned char L2 = packet[3];
+		unsigned char L2 = packet[2];
+		unsigned char L1 = packet[3];
 
-		int size = 256 * L1 + L2;
+		int size = 256 * L2 + L1;
 		memcpy(dest, packet + 4, size);
 
 		return size;
