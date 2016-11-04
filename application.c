@@ -1,7 +1,5 @@
 #include "application.h"
 
-
-
 int main(int argc, char** argv)
 {
 	int state;
@@ -27,7 +25,6 @@ int main(int argc, char** argv)
 		exit(1);
 	}
 
-
 	int fd = openSerial(argv[2], state);
 
 	if (llopen(fd, state) == FALSE) {
@@ -44,6 +41,8 @@ int main(int argc, char** argv)
 	if (llclose(fd, state) != 0) {
 		return -1;
 	}
+
+	printDataStats(state);
 
 	return 0;
 }

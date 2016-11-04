@@ -7,6 +7,8 @@ char charA;
 char charC;
 
 int llopen(int fd, int flag) {
+	initDataStats();
+
 	if (flag == RECEIVER) {
 		int i = 0;
 		char buf[255];
@@ -79,6 +81,7 @@ int llwrite(int fd, char * buffer, int length, char ctrl_bit) {
 			printf("Alarm activated.\n");
 			alarm(config.time_out);
 			alarmFlag = 0;
+			dataLinkStats.sent++;
 		}
 
 		unsigned char* charC = malloc(sizeof(char));
@@ -87,6 +90,8 @@ int llwrite(int fd, char * buffer, int length, char ctrl_bit) {
 		if (!(*charC == C_RR_0 && ctrl_bit == 0) &&
 		    !(*charC == C_RR_1 && ctrl_bit == 1)) {
 			STOP = FALSE;
+			dataLinkStats.resent++;
+			dataLinkStats.rej++;
 			count++;
 		}
 
@@ -108,8 +113,7 @@ int llread(int fd, char * buffer, char ctrl_bit) {
 		read(fd, &TRAMA[i], 1);
 		if (TRAMA[i] == TRAMA_FLAG)
 			flagCounter++;
-
-		i++;
+			i++;
 	} while (flagCounter < 2);
 
 	unsigned int tramaLength = i;
@@ -127,8 +131,12 @@ int llread(int fd, char * buffer, char ctrl_bit) {
 		memcpy(buffer, destuffedData, destuffedLength);
 	} else {
 		createREJ(response, ctrl_bit);
+		dataLinkStats.rej++;
+		dataLinkStats.sent++;
 		printf("REJ sent\n");
 	}
+
+	dataLinkStats.sent++;
 
 	write(fd, response, 5);
 
@@ -425,6 +433,8 @@ int verifyDISC(char * DISC) {
 void handleAlarm() {
 	printf("Read count: %d\n", count);
 	alarmFlag= 1;
+	dataLinkStats.resent++;
+	dataLinkStats.timeOuts++;
 	count++;
 }
 
@@ -546,4 +556,24 @@ int superviseStateMachine(int fd, unsigned char* C) {
 	}
 
 	return 0;
+}
+
+void initDataStats(){
+	dataLinkStats.rej = 0;
+	dataLinkStats.timeOuts = 0;
+	dataLinkStats.sent = 0;
+  dataLinkStats.resent = 0;
+}
+
+void printDataStats(int type){
+	if (type == SENDER){
+		printf("Timeouts: %d\n", dataLinkStats.timeOuts);
+		printf("Resent packets: %d\n", dataLinkStats.resent);
+		printf("Sent packets: %d\n", dataLinkStats.sent);
+	}
+
+	else {
+		printf("Received packets: %d\n", dataLinkStats.sent);
+		printf("Rej: %d\n", dataLinkStats.rej);
+	}
 }
