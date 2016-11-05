@@ -33,7 +33,6 @@ int llopen(int fd, int flag) {
 
 			write(fd, UA, 5);
 			free(UA);
-			printf("llopen successful!\n");
 		}
 	}
 	else {
@@ -74,14 +73,13 @@ int llwrite(int fd, char * buffer, int length, char ctrl_bit) {
 	STOP = FALSE;
 
 	while (count < config.retrans_max && STOP == FALSE) {
-		printf("llwrite\n");
 		write(fd, TRAMA, tramaLength);
+		dataLinkStats.sent++;
 
 		if (alarmFlag) {
 			printf("Alarm activated.\n");
 			alarm(config.time_out);
 			alarmFlag = 0;
-			dataLinkStats.sent++;
 		}
 
 		unsigned char* charC = malloc(sizeof(char));
@@ -132,7 +130,6 @@ int llread(int fd, char * buffer, char ctrl_bit) {
 	} else {
 		createREJ(response, ctrl_bit);
 		dataLinkStats.rej++;
-		dataLinkStats.sent++;
 		printf("REJ sent\n");
 	}
 

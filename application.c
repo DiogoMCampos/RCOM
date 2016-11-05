@@ -83,10 +83,15 @@ int sender(int fd, char* file) {
 		packetID++;
 		packetID = packetID % 255;
 
-		llwrite(fd, packet, frame_size, ctrl_bit);
+		if (llwrite(fd, packet, frame_size, ctrl_bit) == TRUE){
+			ctrl_bit ^= 1;
+			written += read;
+		}
 
-		ctrl_bit ^= 1;
-		written += read;
+		else {
+			printf("Connection lost!\n");
+			exit(1);
+		}
 	}
 
 	free(data);
