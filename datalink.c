@@ -85,7 +85,7 @@ int llwrite(int fd, char * buffer, int length, char ctrl_bit) {
 		unsigned char* charC = malloc(sizeof(char));
 		superviseStateMachine(fd, charC);
 
-		if (!(*charC == C_RR_0 && ctrl_bit == 0) &&
+		if (!alarmFlag && !(*charC == C_RR_0 && ctrl_bit == 0) && 
 		    !(*charC == C_RR_1 && ctrl_bit == 1)) {
 			STOP = FALSE;
 			dataLinkStats.resent++;
