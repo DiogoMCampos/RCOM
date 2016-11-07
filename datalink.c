@@ -137,9 +137,7 @@ int llread(int fd, char * buffer, char ctrl_bit) {
 
 	write(fd, response, 5);
 
-	free(TRAMA);
 	free(destuffedData);
-	free(response);
 
 	return destuffedLength;
 }
@@ -358,7 +356,6 @@ int unmountTrama(char* TRAMA, char* destuffedData, int trama_length, int ctrl_bi
 		return -1;
 	}
 
-	free(stuffedData);
 	free(data);
 
 	return destuffedLength;
