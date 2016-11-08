@@ -105,7 +105,7 @@ int sender(int fd, char* file) {
 int receiver(int fd) {
 	char* start_packet = malloc(255);
 
-	llread(fd, start_packet, 0);
+	llread(fd, start_packet, 0, FALSE);
 
 	char* name = malloc(sizeof(char) * 8);
 	long int size = unmount_control(start_packet, name);
@@ -129,9 +129,15 @@ int receiver(int fd) {
 
 	while (read < size) {
 		int length = 0;
+		int artificial7e = FALSE;
 
 		while (length <= 0) {
-			length = llread(fd, frame, ctrl_bit);
+			length = llread(fd, frame, ctrl_bit, artificial7e);
+			artificial7e = FALSE;
+			if (length == -2) {
+				artificial7e = TRUE;
+				printf("DEU MESMO\n");
+			}
 		}
 
 		char* packet = malloc(config.packet_size);
@@ -150,7 +156,7 @@ int receiver(int fd) {
 
 	char* stop_packet = malloc(255);
 
-	llread(fd, stop_packet, 0);
+	llread(fd, stop_packet, 0, FALSE);
 
 	name = malloc(sizeof(char) * 8);
 	size = unmount_control(stop_packet, name);

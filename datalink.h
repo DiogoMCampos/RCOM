@@ -44,7 +44,7 @@ struct linkStats dataLinkStats;
 
 int llopen(int fd, int flag);
 int llwrite(int fd, char * buffer, int length, char ctrl_bit);
-int llread(int fd, char * buffer, char ctrl_bit);
+int llread(int fd, char * buffer, char ctrl_bit, int artificial7e);
 int llclose(int fd, int flag);
 int openSerial(char* port, int type);
 void createSET(char* SET);

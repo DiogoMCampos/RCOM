@@ -76,6 +76,11 @@ int llwrite(int fd, char * buffer, int length, char ctrl_bit) {
 		write(fd, TRAMA, tramaLength);
 		dataLinkStats.sent++;
 
+		unsigned int k = 0;
+		for (k = 0; k < tramaLength; k++) {
+			printf("%d: %02x\n", k, TRAMA[k]);
+		}
+
 		if (alarmFlag) {
 			printf("Alarm activated.\n");
 			alarm(config.time_out);
@@ -102,10 +107,16 @@ int llwrite(int fd, char * buffer, int length, char ctrl_bit) {
 	return STOP;
 }
 
-int llread(int fd, char * buffer, char ctrl_bit) {
+int llread(int fd, char * buffer, char ctrl_bit, int artificial7e) {
 	unsigned int i = 0;
 	char* TRAMA = malloc(sizeof(char) * 2 * 256 + 6);
 	int flagCounter = 0;
+
+	if (artificial7e == TRUE) {	
+		TRAMA[i] = 0x7e;
+i++;
+flagCounter++;
+	}
 
 	do {
 		read(fd, &TRAMA[i], 1);
@@ -113,6 +124,12 @@ int llread(int fd, char * buffer, char ctrl_bit) {
 			flagCounter++;
 			i++;
 	} while (flagCounter < 2);
+	
+	unsigned int k = 0;
+	for (k = 0; k < i; k++) {
+		printf("%d: %02x \n",k,  TRAMA[k]);
+	}
+	printf("\n");
 
 	unsigned int tramaLength = i;
 
@@ -123,7 +140,7 @@ int llread(int fd, char * buffer, char ctrl_bit) {
 	char* destuffedData = malloc(sizeof(char) * tramaLength);
 	int destuffedLength = unmountTrama(TRAMA, destuffedData, tramaLength, ctrl_bit);
 	char* response = malloc(sizeof(char) * 5);
-	if (destuffedLength != -1) {
+	if (destuffedLength > -1) {
 		createRR(response, ctrl_bit);
 		printf("RR sent\n");
 		memcpy(buffer, destuffedData, destuffedLength);
@@ -131,6 +148,10 @@ int llread(int fd, char * buffer, char ctrl_bit) {
 		createREJ(response, ctrl_bit);
 		dataLinkStats.rej++;
 		printf("REJ sent\n");
+
+		if (destuffedLength == -2) {
+			return -2;
+		}
 	}
 
 	dataLinkStats.sent++;
@@ -353,7 +374,8 @@ int unmountTrama(char* TRAMA, char* destuffedData, int trama_length, int ctrl_bi
 	char bcc2 = createBCC2(data, destuffedLength);
 
 	if (destuffedData[destuffedLength] != bcc2) {
-		return -1;
+printf("VAI TE FODER\n");
+		return -2;
 	}
 
 	free(data);
