@@ -1,13 +1,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
 
 // Max Length for URL parts
 #define URL_MAX 256
-#define USER_MAX 32
-#define PASS_MAX 32
-#define HOST_MAX 64
-#define PATH_MAX 128
 
 // URL State Machine
 #define USER_STATE 0
@@ -16,10 +18,12 @@
 #define PATH_STATE 3
 
 struct url {
-    char user[USER_MAX];
-    char pass[PASS_MAX];
-    char host[HOST_MAX];
-    char path[PATH_MAX];
+	char user[URL_MAX];
+	char pass[URL_MAX];
+	char host[URL_MAX];
+	char path[URL_MAX];
+	char ip[URL_MAX];
 };
 
 void parseUrl(char* url, struct url* urlContents);
+int getIP(struct url* url);

@@ -9,53 +9,68 @@ int main(int argc, char **argv) {
 	char *url = malloc(URL_MAX * sizeof(char));
 	strcpy(url, argv[1]);
 
-    struct url* urlContents = malloc(sizeof(struct url));
+	struct url* urlContents = malloc(sizeof(struct url));
 
-    parseUrl(url, urlContents);
+	parseUrl(url, urlContents);
+    getIP(urlContents);
 
-    free(url);
-    free(urlContents);
+	free(url);
+	free(urlContents);
 
-    return 0;
+	return 0;
 }
 
 void parseUrl(char* url, struct url* urlContents) {
-    int state = USER_STATE;
-    int i = 0;
+	int state = USER_STATE;
+	int i = 0;
 
-    while (*url != '\0') {
-        switch (state) {
-            case USER_STATE:
-                if (*url == ':') {
-                    i = 0;
-                    state = PASS_STATE;
-                } else {
-                    urlContents->user[i++] = *url;
-                }
-                ++url;
-                break;
-            case PASS_STATE:
-                if (*url == '@') {
-                    i = 0;
-                    state = HOST_STATE;
-                } else {
-                    urlContents->pass[i++] = *url;
-                }
-                ++url;
-                break;
-            case HOST_STATE:
-                if (*url == '/') {
-                    i = 0;
-                    state = PATH_STATE;
-                } else {
-                    urlContents->host[i++] = *url;
-                }
-                ++url;
-                break;
-            case PATH_STATE:
-                urlContents->path[i++] = *url;
-                ++url;
-                break;
-        }
-    }
+	while (*url != '\0') {
+		switch (state) {
+		case USER_STATE:
+			if (*url == ':') {
+				i = 0;
+				state = PASS_STATE;
+			} else {
+				urlContents->user[i++] = *url;
+			}
+			++url;
+			break;
+		case PASS_STATE:
+			if (*url == '@') {
+				i = 0;
+				state = HOST_STATE;
+			} else {
+				urlContents->pass[i++] = *url;
+			}
+			++url;
+			break;
+		case HOST_STATE:
+			if (*url == '/') {
+				i = 0;
+				state = PATH_STATE;
+			} else {
+				urlContents->host[i++] = *url;
+			}
+			++url;
+			break;
+		case PATH_STATE:
+			urlContents->path[i++] = *url;
+			++url;
+			break;
+		}
+	}
+}
+
+int getIP(struct url* url) {
+	struct hostent* h;
+
+	if ((h = gethostbyname(url->host)) == NULL) {
+		herror("gethostbyname");
+		return 1;
+	}
+
+	char* ip = inet_ntoa(*((struct in_addr *) h->h_addr));
+	strcpy(url->ip, ip);
+
+	return 0;
 }
