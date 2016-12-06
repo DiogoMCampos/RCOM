@@ -9,17 +9,17 @@ int main(int argc, char **argv) {
 	char *url = malloc(URL_MAX * sizeof(char));
 	strcpy(url, argv[1]);
 
-    char* user = malloc(USER_MAX * sizeof(char));
-    char* password = malloc(PASS_MAX * sizeof(char));
-    char* host = malloc(HOST_MAX * sizeof(char));
-    char* path = malloc(PATH_MAX * sizeof(char));
+    struct url* urlContents = malloc(sizeof(struct url));
 
-    parseUrl(url, user, password, host, path);
+    parseUrl(url, urlContents);
+
+    free(url);
+    free(urlContents);
 
     return 0;
 }
 
-void parseUrl(char* url, char* user, char* password, char* host, char* path) {
+void parseUrl(char* url, struct url* urlContents) {
     int state = USER_STATE;
     int i = 0;
 
@@ -30,7 +30,7 @@ void parseUrl(char* url, char* user, char* password, char* host, char* path) {
                     i = 0;
                     state = PASS_STATE;
                 } else {
-                    user[i++] = *url;
+                    urlContents->user[i++] = *url;
                 }
                 ++url;
                 break;
@@ -39,7 +39,7 @@ void parseUrl(char* url, char* user, char* password, char* host, char* path) {
                     i = 0;
                     state = HOST_STATE;
                 } else {
-                    password[i++] = *url;
+                    urlContents->pass[i++] = *url;
                 }
                 ++url;
                 break;
@@ -48,12 +48,12 @@ void parseUrl(char* url, char* user, char* password, char* host, char* path) {
                     i = 0;
                     state = PATH_STATE;
                 } else {
-                    host[i++] = *url;
+                    urlContents->host[i++] = *url;
                 }
                 ++url;
                 break;
             case PATH_STATE:
-                path[i++] = *url;
+                urlContents->path[i++] = *url;
                 ++url;
                 break;
         }

@@ -15,4 +15,11 @@
 #define HOST_STATE 2
 #define PATH_STATE 3
 
-void parseUrl(char* url, char* user, char* password, char* host, char* path);
+struct url {
+    char user[USER_MAX];
+    char pass[PASS_MAX];
+    char host[HOST_MAX];
+    char path[PATH_MAX];
+};
+
+void parseUrl(char* url, struct url* urlContents);
