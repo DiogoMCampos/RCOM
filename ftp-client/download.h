@@ -10,7 +10,7 @@
 #include <regex.h>
 
 // Max Length for URL parts
-#define URL_MAX 256
+#define URL_MAX 512
 
 // URL State Machine
 #define USER_STATE 0
@@ -27,10 +27,13 @@ struct url {
 	char pass[URL_MAX];
 	char host[URL_MAX];
 	char path[URL_MAX];
+	char dir[URL_MAX];
+	char file[URL_MAX];
 	char ip[URL_MAX];
 };
 
 void parseUrl(char* url, struct url* urlContents);
-void parseFtp(char* url, struct url* urlContents);
 void parseUserLogin(char** url, struct url* urlContents);
+void parseFtp(char* url, struct url* urlContents);
+void parseFile(struct url* urlContents);
 int getIP(struct url* url);

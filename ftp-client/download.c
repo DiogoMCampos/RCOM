@@ -1,7 +1,5 @@
 #include "download.h"
 
-int mode;
-
 int main(int argc, char **argv) {
 	if (argc != 2) {
 		printf("usage: ./download [<user>:<password>@]<host>/<url-path>\n");
@@ -30,9 +28,11 @@ void parseUrl(char* url, struct url* urlContents) {
 	int urlLen = strlen(url);
   	regmatch_t pmatch[urlLen];
 
+	int mode;
+
 	int retLogin = regcomp(&regexL, regexLogin, REG_EXTENDED);
 	if (retLogin != 0) {
-		perror("Failed to compiler regex.");
+		perror("Failed to compiler regex");
 		exit(1);
 	}
 
@@ -40,13 +40,13 @@ void parseUrl(char* url, struct url* urlContents) {
     if (resultLogin != 0) {
 		int retAnon = regcomp(&regexA, regexAnon, REG_EXTENDED);
 		if (retAnon != 0) {
-			perror("Failed to compiler regex.");
+			perror("Failed to compiler regex");
 			exit(1);
 		}
 
 		int resultAnon = regexec(&regexA, url, urlLen, pmatch, REG_EXTENDED);
 	    if (resultAnon != 0) {
-	  		perror("Wrong url format.");
+	  		perror("Wrong url format");
 	  		exit(1);
 	    } else {
 			mode = ANON_MODE;
@@ -60,8 +60,8 @@ void parseUrl(char* url, struct url* urlContents) {
 	if (mode == LOGIN_MODE) {
 		parseUserLogin(&url, urlContents);
 	}
-
 	parseFtp(url, urlContents);
+	parseFile(urlContents);
 }
 
 void parseUserLogin(char** url, struct url* urlContents) {
@@ -113,6 +113,34 @@ void parseFtp(char* url, struct url* urlContents) {
 			break;
 		}
 	}
+}
+
+void parseFile(struct url* urlContents) {
+	char* tmp = malloc(URL_MAX * sizeof(char));
+	char* path = malloc(URL_MAX * sizeof(char));
+	char* dir = malloc(URL_MAX * sizeof(char));
+
+	strcpy(path, urlContents->path);
+
+	int i = 0;
+
+	while (*path != '\0') {
+		if (*path == '/') {
+			tmp[i] = '/';
+			strcat(dir, tmp);
+			free(tmp);
+			tmp = calloc(URL_MAX, sizeof(char));
+
+			i = 0;
+			++path;
+		}
+
+		tmp[i++] = *path;
+		++path;
+	}
+
+	strcpy(urlContents->dir, dir);
+	strcpy(urlContents->file, tmp);
 }
 
 int getIP(struct url* url) {
