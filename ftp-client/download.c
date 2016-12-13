@@ -14,6 +14,12 @@ int main(int argc, char **argv) {
 	parseUrl(url, urlContents);
 	getIP(urlContents);
 
+	int sockfd = connectFtp(urlContents->ip);
+	loginFtp(sockfd, urlContents->user, urlContents->pass);
+	int dataSocket = passiveModeFtp(sockfd);
+	downloadFtp(urlContents->dir, urlContents->file, sockfd, dataSocket);
+	disconnectFtp(sockfd);
+
 	free(url);
 	free(urlContents);
 
@@ -24,9 +30,9 @@ const char* regexLogin = "ftp://(([A-Za-z0-9])*:([A-Za-z0-9])*@)([A-Za-z0-9.~-])
 const char* regexAnon = "ftp://([A-Za-z0-9.~-])+/([[A-Za-z0-9/~._-])+";
 
 void parseUrl(char* url, struct url* urlContents) {
-    regex_t regexL, regexA;
+	regex_t regexL, regexA;
 	int urlLen = strlen(url);
-  	regmatch_t pmatch[urlLen];
+	regmatch_t pmatch[urlLen];
 
 	int mode;
 
@@ -37,7 +43,7 @@ void parseUrl(char* url, struct url* urlContents) {
 	}
 
 	int resultLogin = regexec(&regexL, url, urlLen, pmatch, REG_EXTENDED);
-    if (resultLogin != 0) {
+	if (resultLogin != 0) {
 		int retAnon = regcomp(&regexA, regexAnon, REG_EXTENDED);
 		if (retAnon != 0) {
 			perror("Failed to compiler regex");
@@ -45,13 +51,13 @@ void parseUrl(char* url, struct url* urlContents) {
 		}
 
 		int resultAnon = regexec(&regexA, url, urlLen, pmatch, REG_EXTENDED);
-	    if (resultAnon != 0) {
-	  		perror("Wrong url format");
-	  		exit(1);
-	    } else {
+		if (resultAnon != 0) {
+			perror("Wrong url format");
+			exit(1);
+		} else {
 			mode = ANON_MODE;
 		}
-    } else {
+	} else {
 		mode = LOGIN_MODE;
 	}
 
@@ -59,6 +65,9 @@ void parseUrl(char* url, struct url* urlContents) {
 
 	if (mode == LOGIN_MODE) {
 		parseUserLogin(&url, urlContents);
+	} else {
+		strncpy(urlContents->user, "anonymous", 9);
+		strncpy(urlContents->pass, "pass", 4);
 	}
 	parseFtp(url, urlContents);
 	parseFile(urlContents);
@@ -104,8 +113,8 @@ void parseFtp(char* url, struct url* urlContents) {
 				state = PATH_STATE;
 			} else {
 				urlContents->host[i++] = *url;
+				++url;
 			}
-			++url;
 			break;
 		case PATH_STATE:
 			urlContents->path[i++] = *url;
@@ -125,17 +134,15 @@ void parseFile(struct url* urlContents) {
 	int i = 0;
 
 	while (*path != '\0') {
+		tmp[i++] = *path;
+
 		if (*path == '/') {
-			tmp[i] = '/';
-			strcat(dir, tmp);
+			strncat(dir, tmp, i);
 			free(tmp);
 			tmp = calloc(URL_MAX, sizeof(char));
 
 			i = 0;
-			++path;
 		}
-
-		tmp[i++] = *path;
 		++path;
 	}
 
