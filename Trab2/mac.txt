@@ -1,0 +1,13 @@
+tux31 -> fastethernet port 1 
+tux32 -> fastethernet port 2 
+tux34 -> fastethernet port 4 
+
+VLAN 30
+0/1
+0/4
+
+MAC/IP:
+tux31 -> 00:0f:fe:8b:e4:4d/172.16.1.31
+tux34 -> 00:21:5a:5a:7d:74/172.16.1.34
+
+configT03G03

@@ -1,0 +1,4 @@
+tux31 eth0 - porta1
+tux32 eth0 - porta2
+tux34 eth1 - porta3
+tux34 eth0 - porta4

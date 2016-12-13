@@ -1,0 +1,26 @@
+tux 31
+ ip 172.16.30.1
+ mac 00:0f:fe:8b:e4:40d
+
+
+tux 32
+ ip 172.16.31.1
+ mac 00:21:5a:31:30:63
+
+
+tux 34
+ ip 172.16.30.254
+ mac 00:21:5a:5a:7d:74
+
+
+
+port1  - tux31 eth0
+
+port2  - tux32 eth0
+
+port3  - tux34 eth1
+
+port4  - tux34 eth0
+
+port10 - ROUTER GE0/0
+3.1 - ROUTER GE0/10
